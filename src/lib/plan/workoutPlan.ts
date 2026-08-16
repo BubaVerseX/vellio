@@ -3,8 +3,14 @@ import { seededShuffle } from "./seededRandom";
 import { prioritizeFavorites } from "./favoritesSort";
 import { DAYS_OF_WEEK, type DayKey } from "./mealPlan";
 
-type Profile = Tables<"profiles">;
 type Exercise = Tables<"exercises">;
+
+/** Minimal shape the generator needs — see MealPlanProfileInput in mealPlan.ts. */
+export type WorkoutPlanProfileInput = {
+  id: string;
+  goal: string | null;
+  time_available_minutes: number | null;
+};
 
 export type PlannedExercise = {
   exerciseId: string;
@@ -138,7 +144,7 @@ function buildWeeklyWorkoutPlan(
  * callers (see `generatePlan.ts`).
  */
 export function generateWorkoutPlanData(
-  profile: Profile,
+  profile: WorkoutPlanProfileInput,
   exercises: Exercise[],
   weekStart: string,
   setting: "home" | "gym" | "both",

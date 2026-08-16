@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { format, useLocale } from "@/lib/i18n";
 import { Button } from "@/components/ui/Button";
@@ -8,6 +8,8 @@ import { Card } from "@/components/ui/Card";
 import { Input, Label, Select, Textarea } from "@/components/ui/Input";
 import { Chip, ChipGroup } from "@/components/ui/Chip";
 import { submitOnboarding, type OnboardingInput } from "./actions";
+import { saveGeneratedPlan } from "@/lib/actions/preview";
+import { loadPendingPlan, clearPendingPlan } from "@/lib/plan/pendingPlan";
 
 const ALLERGY_OPTIONS = ["nuts", "peanuts", "dairy", "egg", "gluten", "soy", "fish", "shellfish"] as const;
 const RESTRICTION_OPTIONS = ["vegetarian", "vegan", "gluten_free", "dairy_free", "pescatarian"] as const;
@@ -52,6 +54,26 @@ export default function OnboardingPage() {
   const [form, setForm] = useState<FormState>(initialState);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // If the user generated a plan anonymously via /get-started and had to
+  // confirm their email before a session existed, the plan is waiting in
+  // sessionStorage — save it now instead of making them redo the form. Read
+  // synchronously on first render so there's no flash of the manual form.
+  const [pendingPlan] = useState(() => loadPendingPlan());
+  const [resuming, setResuming] = useState(!!pendingPlan);
+
+  useEffect(() => {
+    if (!pendingPlan) return;
+
+    saveGeneratedPlan(pendingPlan.input, pendingPlan.mealPlan, pendingPlan.workoutPlan).then((result) => {
+      clearPendingPlan();
+      if (result.error) {
+        setResuming(false);
+        return;
+      }
+      router.push("/home");
+      router.refresh();
+    });
+  }, [pendingPlan, router]);
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -105,7 +127,7 @@ export default function OnboardingPage() {
     router.refresh();
   }
 
-  if (submitting) {
+  if (resuming || submitting) {
     return (
       <div className="flex min-h-screen items-center justify-center px-5">
         <Card className="flex flex-col items-center gap-4 text-center">

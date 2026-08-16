@@ -3,8 +3,22 @@ import { seededShuffle } from "./seededRandom";
 import { prioritizeFavorites } from "./favoritesSort";
 import { calculateCalorieTarget, calculateMacros, type MacroTargets } from "./nutrition";
 
-type Profile = Tables<"profiles">;
 type Recipe = Tables<"recipes">;
+
+/** Minimal shape the generator needs — satisfied by a real profile row, or by
+ * an in-progress intake form during the anonymous preview flow (see
+ * lib/plan/previewPlan.ts). */
+export type MealPlanProfileInput = {
+  id: string;
+  weight_kg: number | null;
+  height_cm: number | null;
+  age: number | null;
+  sex: string | null;
+  activity_level: string | null;
+  goal: string | null;
+  allergies: string[];
+  dietary_restrictions: string[];
+};
 
 export const DAYS_OF_WEEK = [
   "monday",
@@ -30,7 +44,7 @@ export type MealPlanData = {
   days: Record<DayKey, DayMealPlan>;
 };
 
-export function filterRecipesForProfile(recipes: Recipe[], profile: Profile): Recipe[] {
+export function filterRecipesForProfile(recipes: Recipe[], profile: MealPlanProfileInput): Recipe[] {
   const allergies = new Set((profile.allergies ?? []).map((a) => a.toLowerCase()));
   const restrictions = profile.dietary_restrictions ?? [];
 
@@ -51,7 +65,7 @@ export function filterRecipesForProfile(recipes: Recipe[], profile: Profile): Re
  * later without touching callers (see `generatePlan.ts`).
  */
 export function generateMealPlanData(
-  profile: Profile,
+  profile: MealPlanProfileInput,
   recipes: Recipe[],
   weekStart: string,
   favoriteRecipeIds: Set<string> = new Set()

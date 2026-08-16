@@ -33,7 +33,7 @@ export default function LandingPage() {
           <p className="max-w-lg text-base text-[var(--color-text-secondary)] md:text-lg">
             {t.landing.subhead}
           </p>
-          <Link href="/signup">
+          <Link href="/get-started">
             <Button className="mt-2 !px-8 !py-4 text-base">{t.landing.cta}</Button>
           </Link>
         </div>

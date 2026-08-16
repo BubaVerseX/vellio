@@ -103,6 +103,12 @@ const en = {
     equipmentBoth: "Both — let me choose per session",
     finish: "Generate my plan",
     generating: "Building your personalized plan…",
+    mealPreviewSubtitle: "Here's a full week of meals built around your numbers — swap anything you don't like.",
+    continueToWorkout: "Continue to build your workout plan",
+    continueToWorkoutBody: "One more short step and we'll put together a workout plan to match.",
+    workoutPreviewTitle: "Your workout plan",
+    saveCta: "Like what you see?",
+    saveCtaBody: "Sign up to save this plan and start tracking your progress.",
   },
   allergens: {
     nuts: "Nuts",

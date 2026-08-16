@@ -1,9 +1,8 @@
 import type { Tables } from "@/lib/supabase/database.types";
-import { filterRecipesForProfile } from "./mealPlan";
+import { filterRecipesForProfile, type MealPlanProfileInput } from "./mealPlan";
 import { prioritizeFavorites } from "./favoritesSort";
 import { seededShuffle } from "./seededRandom";
 
-type Profile = Tables<"profiles">;
 type Recipe = Tables<"recipes">;
 type Exercise = Tables<"exercises">;
 
@@ -13,7 +12,7 @@ const CALORIE_TOLERANCE = 0.3; // ±30% of the current recipe's calories
 export function getMealAlternatives(
   currentRecipe: Recipe,
   allRecipes: Recipe[],
-  profile: Profile,
+  profile: MealPlanProfileInput,
   favoriteRecipeIds: Set<string>,
   seedKey: string
 ): Recipe[] {
