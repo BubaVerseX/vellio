@@ -9,9 +9,12 @@ import { DAYS_OF_WEEK, type DayKey } from "@/lib/plan/mealPlan";
 import { getExercisesByIds } from "@/lib/plan/lookups";
 import { localizedField } from "@/lib/plan/localized";
 import { dayLabel } from "@/lib/plan/dayLabel";
+import { getFavoriteIds } from "@/lib/actions/favorites";
 import { Card } from "@/components/ui/Card";
 import { BlobImage } from "@/components/ui/BlobImage";
 import { WorkoutCompleteButton } from "@/components/WorkoutCompleteButton";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { ExerciseSwapPanel } from "@/components/ExerciseSwapPanel";
 
 function dateForDay(weekStart: string, day: DayKey) {
   const index = DAYS_OF_WEEK.indexOf(day);
@@ -51,7 +54,10 @@ export default async function WorkoutDayPage({
     .maybeSingle();
 
   const exerciseIds = dayPlan.type === "workout" ? dayPlan.exercises.map((e) => e.exerciseId) : [];
-  const exerciseMap = await getExercisesByIds(exerciseIds);
+  const [exerciseMap, favoriteIds] = await Promise.all([
+    getExercisesByIds(exerciseIds),
+    getFavoriteIds(user.id, "exercise"),
+  ]);
 
   return (
     <div className="flex flex-col gap-6 py-6">
@@ -96,9 +102,16 @@ export default async function WorkoutDayPage({
                     className="h-20 w-20 shrink-0"
                   />
                   <div className="flex flex-1 flex-col gap-1.5">
-                    <h3 className="text-base font-extrabold tracking-tight">
-                      {localizedField(exercise, "name", "name_ka", locale)}
-                    </h3>
+                    <div className="flex items-start justify-between gap-2">
+                      <h3 className="text-base font-extrabold tracking-tight">
+                        {localizedField(exercise, "name", "name_ka", locale)}
+                      </h3>
+                      <FavoriteButton
+                        itemType="exercise"
+                        itemId={exercise.id}
+                        initialFavorited={favoriteIds.has(exercise.id)}
+                      />
+                    </div>
                     <span className="text-sm font-semibold text-[var(--color-accent-2)]">
                       {ex.sets} {t.workouts.sets} × {ex.reps} {t.workouts.reps}
                     </span>
@@ -107,6 +120,9 @@ export default async function WorkoutDayPage({
                         {localizedField(exercise, "instructions", "instructions_ka", locale)}
                       </p>
                     )}
+                    <div className="mt-1">
+                      <ExerciseSwapPanel weekStart={weekStart} day={dayKey} exerciseIndex={i} />
+                    </div>
                   </div>
                 </Card>
               );

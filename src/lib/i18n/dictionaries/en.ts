@@ -150,6 +150,10 @@ const en = {
     emptyTitle: "No meal plan yet",
     emptyBody: "Complete your intake form to get a personalized meal plan.",
     regenerate: "Regenerate this week",
+    swap: "Swap",
+    swapChoose: "Choose a replacement",
+    swapNoOptions: "No alternatives available right now.",
+    groceryList: "Grocery list",
   },
   workouts: {
     title: "Workout plan",
@@ -166,6 +170,9 @@ const en = {
     emptyTitle: "No workout plan yet",
     emptyBody: "Complete your intake form to get a personalized workout plan.",
     regenerate: "Regenerate this week",
+    swap: "Swap",
+    swapChoose: "Choose a replacement",
+    swapNoOptions: "No alternatives available right now.",
     muscleGroups: {
       chest: "Chest",
       back: "Back",
@@ -175,6 +182,20 @@ const en = {
       core: "Core",
       full_body: "Full body",
       cardio: "Cardio",
+    },
+  },
+  grocery: {
+    title: "Grocery list",
+    weekOf: "Week of {date}",
+    empty: "No meal plan yet — your grocery list will appear once you have one.",
+    categories: {
+      produce: "Produce",
+      dairy: "Dairy",
+      meat: "Meat",
+      seafood: "Seafood",
+      pantry: "Pantry",
+      spices: "Spices",
+      other: "Other",
     },
   },
   progress: {

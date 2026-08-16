@@ -63,6 +63,73 @@ export type Database = {
         }
         Relationships: []
       }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          item_type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          item_type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          item_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      grocery_list_items: {
+        Row: {
+          checked: boolean
+          id: string
+          ingredient_key: string
+          updated_at: string
+          user_id: string
+          week_start: string
+        }
+        Insert: {
+          checked?: boolean
+          id?: string
+          ingredient_key: string
+          updated_at?: string
+          user_id: string
+          week_start: string
+        }
+        Update: {
+          checked?: boolean
+          id?: string
+          ingredient_key?: string
+          updated_at?: string
+          user_id?: string
+          week_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "grocery_list_items_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       meal_plans: {
         Row: {
           created_at: string
@@ -94,6 +161,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "meal_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      measurements: {
+        Row: {
+          arms_cm: number | null
+          chest_cm: number | null
+          created_at: string
+          date: string
+          hips_cm: number | null
+          id: string
+          thighs_cm: number | null
+          user_id: string
+          waist_cm: number | null
+        }
+        Insert: {
+          arms_cm?: number | null
+          chest_cm?: number | null
+          created_at?: string
+          date: string
+          hips_cm?: number | null
+          id?: string
+          thighs_cm?: number | null
+          user_id: string
+          waist_cm?: number | null
+        }
+        Update: {
+          arms_cm?: number | null
+          chest_cm?: number | null
+          created_at?: string
+          date?: string
+          hips_cm?: number | null
+          id?: string
+          thighs_cm?: number | null
+          user_id?: string
+          waist_cm?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "measurements_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -175,6 +286,7 @@ export type Database = {
           created_at: string
           date: string
           id: string
+          photo_path: string | null
           user_id: string
           weight_kg: number | null
           workout_completed: boolean | null
@@ -184,6 +296,7 @@ export type Database = {
           created_at?: string
           date: string
           id?: string
+          photo_path?: string | null
           user_id: string
           weight_kg?: number | null
           workout_completed?: boolean | null
@@ -193,6 +306,7 @@ export type Database = {
           created_at?: string
           date?: string
           id?: string
+          photo_path?: string | null
           user_id?: string
           weight_kg?: number | null
           workout_completed?: boolean | null

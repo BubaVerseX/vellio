@@ -152,6 +152,10 @@ const ka: Dictionary = {
     emptyTitle: "კვების გეგმა ჯერ არ არის",
     emptyBody: "შეავსე ანკეტა პერსონალური კვების გეგმის მისაღებად.",
     regenerate: "ამ კვირის გენერაცია თავიდან",
+    swap: "შეცვლა",
+    swapChoose: "აირჩიე ჩანაცვლება",
+    swapNoOptions: "ამჟამად ალტერნატივები არ არის.",
+    groceryList: "სავაჭრო სია",
   },
   workouts: {
     title: "ვარჯიშის გეგმა",
@@ -168,6 +172,9 @@ const ka: Dictionary = {
     emptyTitle: "ვარჯიშის გეგმა ჯერ არ არის",
     emptyBody: "შეავსე ანკეტა პერსონალური ვარჯიშის გეგმის მისაღებად.",
     regenerate: "ამ კვირის გენერაცია თავიდან",
+    swap: "შეცვლა",
+    swapChoose: "აირჩიე ჩანაცვლება",
+    swapNoOptions: "ამჟამად ალტერნატივები არ არის.",
     muscleGroups: {
       chest: "მკერდი",
       back: "ზურგი",
@@ -177,6 +184,20 @@ const ka: Dictionary = {
       core: "მუცელი",
       full_body: "სრული სხეული",
       cardio: "კარდიო",
+    },
+  },
+  grocery: {
+    title: "სავაჭრო სია",
+    weekOf: "კვირა: {date}",
+    empty: "კვების გეგმა ჯერ არ არის — სავაჭრო სია გამოჩნდება გეგმის შექმნის შემდეგ.",
+    categories: {
+      produce: "ბოსტნეული და ხილი",
+      dairy: "რძის პროდუქტები",
+      meat: "ხორცი",
+      seafood: "თევზი და ზღვის პროდუქტები",
+      pantry: "სამარაგო",
+      spices: "სანელებლები",
+      other: "სხვა",
     },
   },
   progress: {

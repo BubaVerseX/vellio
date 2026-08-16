@@ -1,5 +1,6 @@
 import type { Tables } from "@/lib/supabase/database.types";
 import { seededShuffle } from "./seededRandom";
+import { prioritizeFavorites } from "./favoritesSort";
 import { calculateCalorieTarget, calculateMacros, type MacroTargets } from "./nutrition";
 
 type Profile = Tables<"profiles">;
@@ -52,7 +53,8 @@ export function filterRecipesForProfile(recipes: Recipe[], profile: Profile): Re
 export function generateMealPlanData(
   profile: Profile,
   recipes: Recipe[],
-  weekStart: string
+  weekStart: string,
+  favoriteRecipeIds: Set<string> = new Set()
 ): { planData: MealPlanData; calorieTarget: number; macros: MacroTargets } | null {
   const calorieTarget = calculateCalorieTarget(profile);
   if (!calorieTarget) return null;
@@ -60,21 +62,33 @@ export function generateMealPlanData(
 
   const eligible = filterRecipesForProfile(recipes, profile);
   const byType = {
-    breakfast: seededShuffle(
-      eligible.filter((r) => r.meal_type === "breakfast"),
-      `${profile.id}-${weekStart}-breakfast`
+    breakfast: prioritizeFavorites(
+      seededShuffle(
+        eligible.filter((r) => r.meal_type === "breakfast"),
+        `${profile.id}-${weekStart}-breakfast`
+      ),
+      favoriteRecipeIds
     ),
-    lunch: seededShuffle(
-      eligible.filter((r) => r.meal_type === "lunch"),
-      `${profile.id}-${weekStart}-lunch`
+    lunch: prioritizeFavorites(
+      seededShuffle(
+        eligible.filter((r) => r.meal_type === "lunch"),
+        `${profile.id}-${weekStart}-lunch`
+      ),
+      favoriteRecipeIds
     ),
-    dinner: seededShuffle(
-      eligible.filter((r) => r.meal_type === "dinner"),
-      `${profile.id}-${weekStart}-dinner`
+    dinner: prioritizeFavorites(
+      seededShuffle(
+        eligible.filter((r) => r.meal_type === "dinner"),
+        `${profile.id}-${weekStart}-dinner`
+      ),
+      favoriteRecipeIds
     ),
-    snack: seededShuffle(
-      eligible.filter((r) => r.meal_type === "snack"),
-      `${profile.id}-${weekStart}-snack`
+    snack: prioritizeFavorites(
+      seededShuffle(
+        eligible.filter((r) => r.meal_type === "snack"),
+        `${profile.id}-${weekStart}-snack`
+      ),
+      favoriteRecipeIds
     ),
   };
 

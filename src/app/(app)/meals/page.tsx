@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Flame } from "lucide-react";
+import { Flame, ShoppingCart } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getServerDictionary } from "@/lib/i18n/serverLocale";
 import { format } from "@/lib/i18n/format";
@@ -64,6 +64,15 @@ export default async function MealsPage() {
           <div className="text-xs text-[var(--color-text-tertiary)]">{t.meals.fat}</div>
         </div>
       </Card>
+
+      <Link href="/meals/grocery">
+        <Card className="flex items-center justify-between transition-all hover:translate-y-[-1px]">
+          <span className="flex items-center gap-2 text-sm font-bold">
+            <ShoppingCart strokeWidth={1.8} className="h-4 w-4 text-[var(--color-accent)]" />
+            {t.meals.groceryList}
+          </span>
+        </Card>
+      </Link>
 
       <div className="flex flex-col gap-3">
         {DAYS_OF_WEEK.map((day) => {

@@ -1,5 +1,6 @@
 import type { Tables } from "@/lib/supabase/database.types";
 import { seededShuffle } from "./seededRandom";
+import { prioritizeFavorites } from "./favoritesSort";
 import { DAYS_OF_WEEK, type DayKey } from "./mealPlan";
 
 type Profile = Tables<"profiles">;
@@ -58,23 +59,27 @@ function pickExercisesForFocus(
   exercises: Exercise[],
   focus: string,
   count: number,
-  seedKey: string
+  seedKey: string,
+  favoriteExerciseIds: Set<string>
 ): Exercise[] {
   let pool: Exercise[];
 
   if (focus === "full_body") {
     const groups = ["legs", "chest", "back", "core", "cardio"];
     pool = groups.flatMap((group) =>
-      seededShuffle(
-        exercises.filter((e) => e.muscle_group === group),
-        `${seedKey}-${group}`
+      prioritizeFavorites(
+        seededShuffle(
+          exercises.filter((e) => e.muscle_group === group),
+          `${seedKey}-${group}`
+        ),
+        favoriteExerciseIds
       ).slice(0, 2)
     );
   } else {
     pool = exercises.filter((e) => e.muscle_group === focus);
   }
 
-  return seededShuffle(pool, seedKey).slice(0, count);
+  return prioritizeFavorites(seededShuffle(pool, seedKey), favoriteExerciseIds).slice(0, count);
 }
 
 /**
@@ -86,7 +91,8 @@ export function generateWorkoutPlanData(
   profile: Profile,
   exercises: Exercise[],
   weekStart: string,
-  setting: "home" | "gym" | "both"
+  setting: "home" | "gym" | "both",
+  favoriteExerciseIds: Set<string> = new Set()
 ): WorkoutPlanData {
   const goal = profile.goal ?? "maintain";
   const focusCycle = FOCUS_CYCLES[goal] ?? FOCUS_CYCLES.maintain;
@@ -111,7 +117,8 @@ export function generateWorkoutPlanData(
       pool,
       focus,
       exerciseCount,
-      `${profile.id}-${weekStart}-${day}-${focus}`
+      `${profile.id}-${weekStart}-${day}-${focus}`,
+      favoriteExerciseIds
     );
 
     days[day] = {

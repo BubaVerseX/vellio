@@ -10,8 +10,13 @@ import { DAYS_OF_WEEK, type DayKey } from "@/lib/plan/mealPlan";
 import { getRecipesByIds, mealIdsFromDay } from "@/lib/plan/lookups";
 import { localizedField } from "@/lib/plan/localized";
 import { dayLabel } from "@/lib/plan/dayLabel";
+import { parseIngredients } from "@/lib/plan/ingredients";
+import { getFavoriteIds } from "@/lib/actions/favorites";
 import { Card } from "@/components/ui/Card";
 import { BlobImage } from "@/components/ui/BlobImage";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { MealSwapPanel } from "@/components/MealSwapPanel";
+import type { MealSlot } from "@/lib/actions/swap";
 
 const MEAL_TYPE_ORDER = ["breakfast", "lunch", "dinner"] as const;
 
@@ -31,15 +36,20 @@ export default async function MealDayPage({
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { mealPlan } = await getOrCreateWeekPlans(user.id, currentWeekStart());
+  const weekStart = currentWeekStart();
+  const { mealPlan } = await getOrCreateWeekPlans(user.id, weekStart);
   if (!mealPlan) notFound();
 
   const dayPlan = mealPlan.planData.days[dayKey];
   const ids = mealIdsFromDay(dayPlan);
-  const recipeMap = await getRecipesByIds(ids);
+  const [recipeMap, favoriteIds] = await Promise.all([
+    getRecipesByIds(ids),
+    getFavoriteIds(user.id, "recipe"),
+  ]);
 
   type MealEntry = {
     type: (typeof MEAL_TYPE_ORDER)[number] | "snack";
+    slot: MealSlot;
     recipe: NonNullable<ReturnType<typeof recipeMap.get>>;
   };
 
@@ -47,12 +57,12 @@ export default async function MealDayPage({
   for (const type of MEAL_TYPE_ORDER) {
     const id = dayPlan[type];
     const recipe = id ? recipeMap.get(id) : undefined;
-    if (recipe) mealsInOrder.push({ type, recipe });
+    if (recipe) mealsInOrder.push({ type, slot: type, recipe });
   }
-  for (const id of dayPlan.snacks) {
+  dayPlan.snacks.forEach((id, snackIndex) => {
     const recipe = recipeMap.get(id);
-    if (recipe) mealsInOrder.push({ type: "snack", recipe });
-  }
+    if (recipe) mealsInOrder.push({ type: "snack", slot: { snackIndex }, recipe });
+  });
 
   return (
     <div className="flex flex-col gap-6 py-6">
@@ -73,7 +83,7 @@ export default async function MealDayPage({
       </div>
 
       <div className="flex flex-col gap-5">
-        {mealsInOrder.map(({ type, recipe }, i) => (
+        {mealsInOrder.map(({ type, slot, recipe }, i) => (
           <Card key={`${type}-${recipe.id}-${i}`} className="flex flex-col gap-4 sm:flex-row">
             <BlobImage
               src={recipe.image_url}
@@ -83,9 +93,16 @@ export default async function MealDayPage({
               className="h-28 w-28 shrink-0 self-center sm:self-start"
             />
             <div className="flex flex-1 flex-col gap-2">
-              <span className="text-xs font-bold uppercase tracking-wide text-[var(--color-text-tertiary)]">
-                {t.meals[type]}
-              </span>
+              <div className="flex items-start justify-between gap-2">
+                <span className="text-xs font-bold uppercase tracking-wide text-[var(--color-text-tertiary)]">
+                  {t.meals[type]}
+                </span>
+                <FavoriteButton
+                  itemType="recipe"
+                  itemId={recipe.id}
+                  initialFavorited={favoriteIds.has(recipe.id)}
+                />
+              </div>
               <h3 className="text-lg font-extrabold tracking-tight">
                 {localizedField(recipe, "name", "name_ka", locale)}
               </h3>
@@ -121,13 +138,15 @@ export default async function MealDayPage({
                 </span>
               </div>
 
-              {Array.isArray(recipe.ingredients) && recipe.ingredients.length > 0 && (
+              {parseIngredients(recipe.ingredients).length > 0 && (
                 <div className="mt-2">
                   <span className="text-xs font-bold uppercase tracking-wide text-[var(--color-text-tertiary)]">
                     {t.meals.ingredients}
                   </span>
                   <p className="text-sm text-[var(--color-text-secondary)]">
-                    {(recipe.ingredients as unknown as string[]).join(", ")}
+                    {parseIngredients(recipe.ingredients)
+                      .map((ing) => `${ing.name} (${ing.quantity} ${ing.unit})`)
+                      .join(", ")}
                   </p>
                 </div>
               )}
@@ -142,6 +161,10 @@ export default async function MealDayPage({
                   </p>
                 </div>
               )}
+
+              <div className="mt-2">
+                <MealSwapPanel weekStart={weekStart} day={dayKey} slot={slot} />
+              </div>
             </div>
           </Card>
         ))}

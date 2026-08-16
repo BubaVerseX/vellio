@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { generateMealPlanData, type MealPlanData, DAYS_OF_WEEK, type DayKey } from "./mealPlan";
 import { generateWorkoutPlanData, type WorkoutPlanData } from "./workoutPlan";
 import type { MacroTargets } from "./nutrition";
+import { getFavoriteIds } from "@/lib/actions/favorites";
 
 export type GeneratedPlan = {
   mealPlan: { calorieTarget: number; macros: MacroTargets; planData: MealPlanData };
@@ -21,19 +22,28 @@ export async function generatePlan(
 ): Promise<GeneratedPlan | null> {
   const supabase = await createClient();
 
-  const [{ data: profile }, { data: recipes }, { data: exercises }] = await Promise.all([
-    supabase.from("profiles").select("*").eq("id", userId).single(),
-    supabase.from("recipes").select("*"),
-    supabase.from("exercises").select("*"),
-  ]);
+  const [{ data: profile }, { data: recipes }, { data: exercises }, favoriteRecipeIds, favoriteExerciseIds] =
+    await Promise.all([
+      supabase.from("profiles").select("*").eq("id", userId).single(),
+      supabase.from("recipes").select("*"),
+      supabase.from("exercises").select("*"),
+      getFavoriteIds(userId, "recipe"),
+      getFavoriteIds(userId, "exercise"),
+    ]);
 
   if (!profile || !recipes || !exercises) return null;
 
-  const mealResult = generateMealPlanData(profile, recipes, weekStart);
+  const mealResult = generateMealPlanData(profile, recipes, weekStart, favoriteRecipeIds);
   if (!mealResult) return null;
 
   const workoutSetting = (profile.equipment_setting ?? "home") as "home" | "gym" | "both";
-  const workoutPlanData = generateWorkoutPlanData(profile, exercises, weekStart, workoutSetting);
+  const workoutPlanData = generateWorkoutPlanData(
+    profile,
+    exercises,
+    weekStart,
+    workoutSetting,
+    favoriteExerciseIds
+  );
 
   const [{ error: mealError }, { error: workoutError }] = await Promise.all([
     supabase.from("meal_plans").upsert(
