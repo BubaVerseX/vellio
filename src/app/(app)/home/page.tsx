@@ -7,9 +7,14 @@ import { currentWeekStart, dayKeyForDate } from "@/lib/plan/generatePlan";
 import { getOrCreateWeekPlans } from "@/lib/plan/getWeekPlans";
 import { getRecipesByIds, getExercisesByIds, mealIdsFromDay } from "@/lib/plan/lookups";
 import { localizedField } from "@/lib/plan/localized";
+import type { MealLogStatus } from "@/lib/actions/mealFriction";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/Button";
+import { QuickMealLogToggle } from "@/components/QuickMealLogToggle";
+import { WorkoutCompleteButton } from "@/components/WorkoutCompleteButton";
+
+const MAIN_SLOTS = ["breakfast", "lunch", "dinner"] as const;
 
 export default async function HomePage() {
   const supabase = await createClient();
@@ -44,6 +49,17 @@ export default async function HomePage() {
 
   const workoutsCompleted = (recentLogs ?? []).filter((l) => l.workout_completed).length;
   const latestWeight = [...(recentLogs ?? [])].reverse().find((l) => l.weight_kg != null)?.weight_kg;
+
+  const todayDate = new Date().toISOString().slice(0, 10);
+  const todayProgressLog = (recentLogs ?? []).find((l) => l.date === todayDate);
+  const { data: todayMealLogs } = await supabase
+    .from("meal_logs")
+    .select("slot, status")
+    .eq("user_id", user.id)
+    .eq("date", todayDate);
+  const mealLogBySlot = new Map(
+    (todayMealLogs ?? []).map((row) => [row.slot, row.status as MealLogStatus])
+  );
 
   return (
     <div className="flex flex-col gap-6 py-6">
@@ -80,21 +96,51 @@ export default async function HomePage() {
         </div>
         <div className="flex flex-col gap-2">
           {todayMeals && mealIdsFromDay(todayMeals).length > 0 ? (
-            mealIdsFromDay(todayMeals).map((id) => {
-              const recipe = recipeMap.get(id);
-              if (!recipe) return null;
-              return (
-                <div key={id} className="soft-pressed flex items-center justify-between rounded-xl px-4 py-3">
-                  <span className="text-sm font-semibold">
-                    {localizedField(recipe, "name", "name_ka", locale)}
-                  </span>
-                  <span className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)]">
-                    <Flame strokeWidth={1.8} className="h-3.5 w-3.5" />
-                    {recipe.calories} {t.meals.calories}
-                  </span>
-                </div>
-              );
-            })
+            <>
+              {MAIN_SLOTS.map((slot) => {
+                const id = todayMeals[slot];
+                const recipe = id ? recipeMap.get(id) : undefined;
+                if (!recipe) return null;
+                return (
+                  <div key={slot} className="soft-pressed flex items-center justify-between gap-2 rounded-xl px-4 py-3">
+                    <div className="min-w-0">
+                      <span className="block text-[10px] font-bold uppercase text-[var(--color-text-tertiary)]">
+                        {t.meals[slot]}
+                      </span>
+                      <span className="block truncate text-sm font-semibold">
+                        {localizedField(recipe, "name", "name_ka", locale)}
+                      </span>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <span className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)]">
+                        <Flame strokeWidth={1.8} className="h-3.5 w-3.5" />
+                        {recipe.calories}
+                      </span>
+                      <QuickMealLogToggle
+                        date={todayDate}
+                        slot={slot}
+                        initialStatus={mealLogBySlot.get(slot) ?? null}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+              {todayMeals.snacks.map((id) => {
+                const recipe = recipeMap.get(id);
+                if (!recipe) return null;
+                return (
+                  <div key={id} className="soft-pressed flex items-center justify-between rounded-xl px-4 py-3">
+                    <span className="text-sm font-semibold">
+                      {localizedField(recipe, "name", "name_ka", locale)}
+                    </span>
+                    <span className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)]">
+                      <Flame strokeWidth={1.8} className="h-3.5 w-3.5" />
+                      {recipe.calories} {t.meals.calories}
+                    </span>
+                  </div>
+                );
+              })}
+            </>
           ) : (
             <p className="text-sm text-[var(--color-text-secondary)]">{t.meals.emptyBody}</p>
           )}
@@ -131,6 +177,12 @@ export default async function HomePage() {
                 </div>
               );
             })}
+            <div className="mt-1">
+              <WorkoutCompleteButton
+                date={todayDate}
+                initialCompleted={!!todayProgressLog?.workout_completed}
+              />
+            </div>
           </div>
         ) : (
           <p className="text-sm text-[var(--color-text-secondary)]">{t.workouts.restDayBody}</p>
