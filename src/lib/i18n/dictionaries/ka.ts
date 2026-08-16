@@ -164,6 +164,10 @@ const ka: Dictionary = {
     swapChoose: "აირჩიე ჩანაცვლება",
     swapNoOptions: "ამჟამად ალტერნატივები არ არის.",
     groceryList: "სავაჭრო სია",
+    quickSwap: "სწრაფი შეცვლა",
+    markEaten: "შეჭმულია",
+    ateOut: "გარეთ ვჭამე",
+    portion: "პორცია",
   },
   workouts: {
     title: "ვარჯიშის გეგმა",

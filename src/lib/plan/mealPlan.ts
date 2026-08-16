@@ -32,13 +32,38 @@ export const DAYS_OF_WEEK = [
 
 export type DayKey = (typeof DAYS_OF_WEEK)[number];
 
+export type MealSlotKey = "breakfast" | "lunch" | "dinner";
+
 export type DayMealPlan = {
   breakfast: string | null;
   lunch: string | null;
   dinner: string | null;
   snacks: string[];
   totalCalories: number;
+  /** Serving-size multiplier per slot, e.g. 1.5 = one and a half servings.
+   * Absent/undefined means 1x — old plans generated before portion scaling
+   * existed are still valid without a migration. */
+  portions?: Partial<Record<MealSlotKey, number>>;
 };
+
+export function portionFor(day: DayMealPlan, slot: MealSlotKey): number {
+  return day.portions?.[slot] ?? 1;
+}
+
+const MAIN_SLOTS: MealSlotKey[] = ["breakfast", "lunch", "dinner"];
+
+/** Recomputes a day's total calories, honoring any portion scaling on the
+ * three main slots (snacks are always 1x). `calorieById` only needs to cover
+ * the recipe ids referenced by this day. */
+export function computeDayTotalCalories(day: DayMealPlan, calorieById: Map<string, number>): number {
+  const mainTotal = MAIN_SLOTS.reduce((sum, slot) => {
+    const recipeId = day[slot];
+    if (!recipeId) return sum;
+    return sum + (calorieById.get(recipeId) ?? 0) * portionFor(day, slot);
+  }, 0);
+  const snackTotal = day.snacks.reduce((sum, id) => sum + (calorieById.get(id) ?? 0), 0);
+  return Math.round(mainTotal + snackTotal);
+}
 
 export type MealPlanData = {
   days: Record<DayKey, DayMealPlan>;

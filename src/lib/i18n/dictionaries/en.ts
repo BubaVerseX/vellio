@@ -162,6 +162,10 @@ const en = {
     swapChoose: "Choose a replacement",
     swapNoOptions: "No alternatives available right now.",
     groceryList: "Grocery list",
+    quickSwap: "Quickest swap",
+    markEaten: "Eaten",
+    ateOut: "Ate out",
+    portion: "Portion",
   },
   workouts: {
     title: "Workout plan",

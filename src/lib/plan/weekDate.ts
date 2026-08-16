@@ -14,3 +14,11 @@ export function dayKeyForDate(date = new Date()): DayKey {
   const day = date.getDay();
   return DAYS_OF_WEEK[day === 0 ? 6 : day - 1];
 }
+
+/** The calendar date (YYYY-MM-DD) for a given day-of-week within a week. */
+export function dateForDay(weekStart: string, day: DayKey): string {
+  const index = DAYS_OF_WEEK.indexOf(day);
+  const d = new Date(`${weekStart}T00:00:00`);
+  d.setDate(d.getDate() + index);
+  return d.toISOString().slice(0, 10);
+}

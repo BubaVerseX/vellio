@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getFavoriteIds } from "./favorites";
 import { getMealAlternatives, getExerciseAlternatives } from "@/lib/plan/alternatives";
-import type { DayKey, MealPlanData } from "@/lib/plan/mealPlan";
+import { computeDayTotalCalories, type DayKey, type MealPlanData } from "@/lib/plan/mealPlan";
 import type { WorkoutPlanData } from "@/lib/plan/workoutPlan";
 
 export type MealSlot = "breakfast" | "lunch" | "dinner" | { snackIndex: number };
@@ -89,7 +89,7 @@ export async function applyMealSwap(
   );
   const { data: dayRecipes } = await supabase.from("recipes").select("id, calories").in("id", ids);
   const calorieById = new Map((dayRecipes ?? []).map((r) => [r.id, r.calories]));
-  dayPlan.totalCalories = ids.reduce((sum, id) => sum + (calorieById.get(id) ?? 0), 0);
+  dayPlan.totalCalories = computeDayTotalCalories(dayPlan, calorieById);
 
   const newPlanData: MealPlanData = { days: { ...planData.days, [day]: dayPlan } };
 

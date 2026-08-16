@@ -1,15 +1,8 @@
 import type { Tables } from "@/lib/supabase/database.types";
 import { parseIngredients, type IngredientCategory } from "./ingredients";
-import { DAYS_OF_WEEK, type DayMealPlan, type MealPlanData } from "./mealPlan";
+import { DAYS_OF_WEEK, portionFor, type MealPlanData, type MealSlotKey } from "./mealPlan";
 
-// Duplicated from lib/plan/lookups.ts (deliberately, not imported): that module
-// pulls in the server-only Supabase client, which would leak into the client
-// bundle for GroceryListView if imported here.
-function mealIdsFromDay(day: DayMealPlan): string[] {
-  return [day.breakfast, day.lunch, day.dinner, ...day.snacks].filter(
-    (id): id is string => !!id
-  );
-}
+const MAIN_SLOTS: MealSlotKey[] = ["breakfast", "lunch", "dinner"];
 
 type Recipe = Tables<"recipes">;
 
@@ -46,27 +39,36 @@ export function aggregateGroceryList(
 ): Record<IngredientCategory, GroceryItem[]> {
   const totals = new Map<string, GroceryItem>();
 
-  for (const day of DAYS_OF_WEEK) {
-    const ids = mealIdsFromDay(weekMealPlan.days[day]);
-    for (const id of ids) {
-      const recipe = recipesById.get(id);
-      if (!recipe) continue;
+  function addIngredients(recipeId: string | null, multiplier: number) {
+    if (!recipeId) return;
+    const recipe = recipesById.get(recipeId);
+    if (!recipe) return;
 
-      for (const ing of parseIngredients(recipe.ingredients)) {
-        const key = ingredientKey(ing.name, ing.unit);
-        const existing = totals.get(key);
-        if (existing) {
-          existing.quantity += ing.quantity;
-        } else {
-          totals.set(key, {
-            key,
-            name: ing.name,
-            quantity: ing.quantity,
-            unit: ing.unit,
-            category: ing.category,
-          });
-        }
+    for (const ing of parseIngredients(recipe.ingredients)) {
+      const key = ingredientKey(ing.name, ing.unit);
+      const existing = totals.get(key);
+      const scaledQuantity = ing.quantity * multiplier;
+      if (existing) {
+        existing.quantity += scaledQuantity;
+      } else {
+        totals.set(key, {
+          key,
+          name: ing.name,
+          quantity: scaledQuantity,
+          unit: ing.unit,
+          category: ing.category,
+        });
       }
+    }
+  }
+
+  for (const day of DAYS_OF_WEEK) {
+    const dayPlan = weekMealPlan.days[day];
+    for (const slot of MAIN_SLOTS) {
+      addIngredients(dayPlan[slot], portionFor(dayPlan, slot));
+    }
+    for (const snackId of dayPlan.snacks) {
+      addIngredients(snackId, 1);
     }
   }
 

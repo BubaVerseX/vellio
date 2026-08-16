@@ -5,17 +5,20 @@ import { createClient } from "@/lib/supabase/server";
 import { getServerDictionary } from "@/lib/i18n/serverLocale";
 import { format } from "@/lib/i18n/format";
 import { currentWeekStart } from "@/lib/plan/generatePlan";
+import { dateForDay } from "@/lib/plan/weekDate";
 import { getOrCreateWeekPlans } from "@/lib/plan/getWeekPlans";
-import { DAYS_OF_WEEK, type DayKey } from "@/lib/plan/mealPlan";
+import { DAYS_OF_WEEK, portionFor, type DayKey } from "@/lib/plan/mealPlan";
 import { getRecipesByIds, mealIdsFromDay } from "@/lib/plan/lookups";
 import { localizedField } from "@/lib/plan/localized";
 import { dayLabel } from "@/lib/plan/dayLabel";
 import { parseIngredients } from "@/lib/plan/ingredients";
 import { getFavoriteIds } from "@/lib/actions/favorites";
+import type { MealLogStatus } from "@/lib/actions/mealFriction";
 import { Card } from "@/components/ui/Card";
 import { BlobImage } from "@/components/ui/BlobImage";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { MealSwapPanel } from "@/components/MealSwapPanel";
+import { MealMainSlotControls } from "@/components/MealMainSlotControls";
 import type { MealSlot } from "@/lib/actions/swap";
 
 const MEAL_TYPE_ORDER = ["breakfast", "lunch", "dinner"] as const;
@@ -42,26 +45,32 @@ export default async function MealDayPage({
 
   const dayPlan = mealPlan.planData.days[dayKey];
   const ids = mealIdsFromDay(dayPlan);
-  const [recipeMap, favoriteIds] = await Promise.all([
+  const date = dateForDay(weekStart, dayKey);
+  const [recipeMap, favoriteIds, { data: mealLogRows }] = await Promise.all([
     getRecipesByIds(ids),
     getFavoriteIds(user.id, "recipe"),
+    supabase.from("meal_logs").select("slot, status").eq("user_id", user.id).eq("date", date),
   ]);
+  const logStatusBySlot = new Map(
+    (mealLogRows ?? []).map((row) => [row.slot, row.status as MealLogStatus])
+  );
 
   type MealEntry = {
     type: (typeof MEAL_TYPE_ORDER)[number] | "snack";
     slot: MealSlot;
     recipe: NonNullable<ReturnType<typeof recipeMap.get>>;
+    portion: number;
   };
 
   const mealsInOrder: MealEntry[] = [];
   for (const type of MEAL_TYPE_ORDER) {
     const id = dayPlan[type];
     const recipe = id ? recipeMap.get(id) : undefined;
-    if (recipe) mealsInOrder.push({ type, slot: type, recipe });
+    if (recipe) mealsInOrder.push({ type, slot: type, recipe, portion: portionFor(dayPlan, type) });
   }
   dayPlan.snacks.forEach((id, snackIndex) => {
     const recipe = recipeMap.get(id);
-    if (recipe) mealsInOrder.push({ type: "snack", slot: { snackIndex }, recipe });
+    if (recipe) mealsInOrder.push({ type: "snack", slot: { snackIndex }, recipe, portion: 1 });
   });
 
   return (
@@ -83,7 +92,7 @@ export default async function MealDayPage({
       </div>
 
       <div className="flex flex-col gap-5">
-        {mealsInOrder.map(({ type, slot, recipe }, i) => (
+        {mealsInOrder.map(({ type, slot, recipe, portion }, i) => (
           <Card key={`${type}-${recipe.id}-${i}`} className="flex flex-col gap-4 sm:flex-row">
             <BlobImage
               src={recipe.image_url}
@@ -115,7 +124,8 @@ export default async function MealDayPage({
               <div className="mt-1 flex flex-wrap gap-3 text-xs text-[var(--color-text-tertiary)]">
                 <span className="flex items-center gap-1">
                   <Flame strokeWidth={1.8} className="h-3.5 w-3.5" />
-                  {recipe.calories} {t.meals.calories}
+                  {Math.round(recipe.calories * portion)} {t.meals.calories}
+                  {portion !== 1 && ` (${portion}×)`}
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock strokeWidth={1.8} className="h-3.5 w-3.5" />
@@ -125,15 +135,15 @@ export default async function MealDayPage({
 
               <div className="mt-2 flex gap-4 text-sm">
                 <span>
-                  <b>{recipe.protein_g}g</b>{" "}
+                  <b>{Math.round(recipe.protein_g * portion)}g</b>{" "}
                   <span className="text-[var(--color-text-tertiary)]">{t.meals.protein}</span>
                 </span>
                 <span>
-                  <b>{recipe.carbs_g}g</b>{" "}
+                  <b>{Math.round(recipe.carbs_g * portion)}g</b>{" "}
                   <span className="text-[var(--color-text-tertiary)]">{t.meals.carbs}</span>
                 </span>
                 <span>
-                  <b>{recipe.fat_g}g</b>{" "}
+                  <b>{Math.round(recipe.fat_g * portion)}g</b>{" "}
                   <span className="text-[var(--color-text-tertiary)]">{t.meals.fat}</span>
                 </span>
               </div>
@@ -145,7 +155,7 @@ export default async function MealDayPage({
                   </span>
                   <p className="text-sm text-[var(--color-text-secondary)]">
                     {parseIngredients(recipe.ingredients)
-                      .map((ing) => `${ing.name} (${ing.quantity} ${ing.unit})`)
+                      .map((ing) => `${ing.name} (${Math.round(ing.quantity * portion * 100) / 100} ${ing.unit})`)
                       .join(", ")}
                   </p>
                 </div>
@@ -162,8 +172,18 @@ export default async function MealDayPage({
                 </div>
               )}
 
-              <div className="mt-2">
+              <div className="mt-2 flex flex-col gap-2">
                 <MealSwapPanel weekStart={weekStart} day={dayKey} slot={slot} />
+                {typeof slot === "string" && (
+                  <MealMainSlotControls
+                    weekStart={weekStart}
+                    day={dayKey}
+                    slot={slot}
+                    date={date}
+                    currentPortion={portionFor(dayPlan, slot)}
+                    initialLogStatus={logStatusBySlot.get(slot) ?? null}
+                  />
+                )}
               </div>
             </div>
           </Card>
