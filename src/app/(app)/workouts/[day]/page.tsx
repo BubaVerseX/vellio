@@ -4,6 +4,7 @@ import { ArrowLeft, Dumbbell } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getServerDictionary } from "@/lib/i18n/serverLocale";
 import { currentWeekStart } from "@/lib/plan/generatePlan";
+import { dateForDay } from "@/lib/plan/weekDate";
 import { getOrCreateWeekPlans } from "@/lib/plan/getWeekPlans";
 import { DAYS_OF_WEEK, type DayKey } from "@/lib/plan/mealPlan";
 import { getExercisesByIds } from "@/lib/plan/lookups";
@@ -15,13 +16,7 @@ import { BlobImage } from "@/components/ui/BlobImage";
 import { WorkoutCompleteButton } from "@/components/WorkoutCompleteButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { ExerciseSwapPanel } from "@/components/ExerciseSwapPanel";
-
-function dateForDay(weekStart: string, day: DayKey) {
-  const index = DAYS_OF_WEEK.indexOf(day);
-  const d = new Date(`${weekStart}T00:00:00`);
-  d.setDate(d.getDate() + index);
-  return d.toISOString().slice(0, 10);
-}
+import { WorkoutDayFrictionControls } from "@/components/WorkoutDayFrictionControls";
 
 export default async function WorkoutDayPage({
   params,
@@ -130,6 +125,13 @@ export default async function WorkoutDayPage({
           </div>
 
           <WorkoutCompleteButton date={date} initialCompleted={!!log?.workout_completed} />
+          <WorkoutDayFrictionControls
+            weekStart={weekStart}
+            day={dayKey}
+            restDays={DAYS_OF_WEEK.filter(
+              (d) => d !== dayKey && workoutPlan.planData.days[d].type === "rest"
+            )}
+          />
         </>
       )}
     </div>

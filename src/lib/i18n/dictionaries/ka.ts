@@ -188,6 +188,10 @@ const ka: Dictionary = {
     swapChoose: "აირჩიე ჩანაცვლება",
     swapNoOptions: "ამჟამად ალტერნატივები არ არის.",
     browseTemplates: "ვარჯიშის შაბლონების დათვალიერება",
+    onlyHaveMinutes: "მაქვს მხოლოდ:",
+    skipReschedule: "გამოტოვება და გადატანა",
+    rescheduleToDay: "გადაიტანე ეს ვარჯიში დასვენების დღეზე",
+    noRestDays: "ამ კვირას გადასატანად დასვენების დღე არ არის.",
     muscleGroups: {
       chest: "მკერდი",
       back: "ზურგი",

@@ -186,6 +186,10 @@ const en = {
     swapChoose: "Choose a replacement",
     swapNoOptions: "No alternatives available right now.",
     browseTemplates: "Browse workout templates",
+    onlyHaveMinutes: "Only have:",
+    skipReschedule: "Skip & reschedule",
+    rescheduleToDay: "Move this workout to a rest day",
+    noRestDays: "No rest days available to move to this week.",
     muscleGroups: {
       chest: "Chest",
       back: "Back",
