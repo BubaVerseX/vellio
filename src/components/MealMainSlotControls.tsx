@@ -10,9 +10,9 @@ import {
   quickSwapToSimplest,
   setMealPortion,
   logMealStatus,
-  PORTION_OPTIONS,
   type MealLogStatus,
 } from "@/lib/actions/mealFriction";
+import { PORTION_OPTIONS } from "@/lib/plan/portions";
 import { cn } from "@/lib/utils";
 
 export function MealMainSlotControls({

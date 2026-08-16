@@ -10,6 +10,7 @@ import {
   type MealPlanData,
   type MealSlotKey,
 } from "@/lib/plan/mealPlan";
+import type { PortionOption } from "@/lib/plan/portions";
 
 async function getUser() {
   const supabase = await createClient();
@@ -79,8 +80,6 @@ export async function quickSwapToSimplest(weekStart: string, day: DayKey, slot: 
   return { success: true, changed: true, newRecipeName: simplest.name };
 }
 
-const PORTION_OPTIONS = [0.5, 1, 1.5, 2] as const;
-
 /** Scales a slot's serving size. Ingredient quantities scale automatically
  * wherever the grocery list aggregates this week's meal plan (see
  * lib/plan/groceryList.ts), since it reads this same portions map. */
@@ -88,7 +87,7 @@ export async function setMealPortion(
   weekStart: string,
   day: DayKey,
   slot: MealSlotKey,
-  portion: (typeof PORTION_OPTIONS)[number]
+  portion: PortionOption
 ) {
   const supabase = await createClient();
   const user = await getUser();
@@ -155,5 +154,3 @@ export async function logMealStatus(date: string, slot: MealSlotKey, status: Mea
   revalidatePath("/home");
   return { success: true };
 }
-
-export { PORTION_OPTIONS };

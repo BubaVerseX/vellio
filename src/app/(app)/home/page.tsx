@@ -6,6 +6,7 @@ import { format } from "@/lib/i18n/format";
 import { currentWeekStart, dayKeyForDate } from "@/lib/plan/generatePlan";
 import { getOrCreateWeekPlans } from "@/lib/plan/getWeekPlans";
 import { getRecipesByIds, getExercisesByIds, mealIdsFromDay } from "@/lib/plan/lookups";
+import { portionFor } from "@/lib/plan/mealPlan";
 import { localizedField } from "@/lib/plan/localized";
 import type { MealLogStatus } from "@/lib/actions/mealFriction";
 import { Card } from "@/components/ui/Card";
@@ -101,6 +102,7 @@ export default async function HomePage() {
                 const id = todayMeals[slot];
                 const recipe = id ? recipeMap.get(id) : undefined;
                 if (!recipe) return null;
+                const displayCalories = Math.round(recipe.calories * portionFor(todayMeals, slot));
                 return (
                   <div key={slot} className="soft-pressed flex items-center justify-between gap-2 rounded-xl px-4 py-3">
                     <div className="min-w-0">
@@ -114,7 +116,7 @@ export default async function HomePage() {
                     <div className="flex shrink-0 items-center gap-2">
                       <span className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)]">
                         <Flame strokeWidth={1.8} className="h-3.5 w-3.5" />
-                        {recipe.calories}
+                        {displayCalories}
                       </span>
                       <QuickMealLogToggle
                         date={todayDate}
