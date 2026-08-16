@@ -1,26 +1,166 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-bg: #e8ecef;
+  --color-surface: #f4f6f8;
+  --color-text-primary: #141a21;
+  --color-text-secondary: #5c6773;
+  --color-text-tertiary: #8b95a1;
+  --color-accent: #ff5722;
+  --color-accent-2: #0d6efd;
+
+  --shadow-dark: #c7ccd1;
+  --shadow-light: #ffffff;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-text-primary: var(--color-text-primary);
+  --color-text-secondary: var(--color-text-secondary);
+  --color-text-tertiary: var(--color-text-tertiary);
+  --color-accent: var(--color-accent);
+  --color-accent-2: var(--color-accent-2);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+p,
+li {
+  line-height: 1.6;
+}
+
+/* ============================================================
+   Soft tactile / neumorphic shadow system — the core visual
+   signature. Shadow tones are derived from --color-bg, never
+   plain neutral gray.
+   ============================================================ */
+
+.soft-raised {
+  background: var(--color-bg);
+  box-shadow: 8px 8px 18px var(--shadow-dark), -8px -8px 18px var(--shadow-light);
+  border: none;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.soft-raised-sm {
+  background: var(--color-bg);
+  box-shadow: 4px 4px 10px var(--shadow-dark), -4px -4px 10px var(--shadow-light);
+  border: none;
+  transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.soft-pressed {
+  background: var(--color-bg);
+  box-shadow: inset 5px 5px 10px var(--shadow-dark), inset -5px -5px 10px var(--shadow-light);
+  border: none;
+}
+
+button.soft-raised:active,
+.soft-raised-tappable:active {
+  box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
+  transform: scale(0.99);
+}
+
+.soft-flat {
+  background: transparent;
+  box-shadow: none;
+  border: none;
+}
+
+.soft-disabled {
+  background: var(--color-bg);
+  box-shadow: none;
+  color: var(--color-text-tertiary);
+}
+
+/* On the alternate lighter surface, shadows must derive from that
+   surface color too so nested cards still read as "soft". */
+.surface-alt {
+  background: var(--color-surface);
+}
+
+.surface-alt.soft-raised {
+  box-shadow: 6px 6px 14px #d7dbdd, -6px -6px 14px #ffffff;
+}
+
+.surface-alt.soft-pressed {
+  box-shadow: inset 4px 4px 8px #d7dbdd, inset -4px -4px 8px #ffffff;
+}
+
+/* ============================================================
+   Organic blob image mask — signature shape for any photo.
+   Percentages vary slightly per usage via the --blob-* vars.
+   ============================================================ */
+
+.blob-mask {
+  --blob-1: 62%;
+  --blob-2: 38%;
+  --blob-3: 55%;
+  --blob-4: 45%;
+  --blob-5: 45%;
+  --blob-6: 55%;
+  --blob-7: 45%;
+  --blob-8: 55%;
+  border-radius: var(--blob-1) var(--blob-2) var(--blob-3) var(--blob-4) /
+    var(--blob-5) var(--blob-6) var(--blob-7) var(--blob-8);
+  overflow: hidden;
+}
+
+.blob-variant-2 {
+  --blob-1: 45%;
+  --blob-2: 55%;
+  --blob-3: 40%;
+  --blob-4: 60%;
+  --blob-5: 60%;
+  --blob-6: 40%;
+  --blob-7: 55%;
+  --blob-8: 45%;
+}
+
+.blob-variant-3 {
+  --blob-1: 55%;
+  --blob-2: 45%;
+  --blob-3: 62%;
+  --blob-4: 38%;
+  --blob-5: 38%;
+  --blob-6: 62%;
+  --blob-7: 40%;
+  --blob-8: 60%;
+}
+
+/* ============================================================
+   Scrollbars off the mobile bottom nav gutter
+   ============================================================ */
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
 }
