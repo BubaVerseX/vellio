@@ -28,6 +28,8 @@ const en = {
     notifications: "Notifications",
     signOut: "Sign out",
     disclaimer: "Medical disclaimer",
+    tips: "Healthy tips",
+    faq: "FAQ",
   },
   landing: {
     headline: "Your body, your plan.",
@@ -173,6 +175,7 @@ const en = {
     swap: "Swap",
     swapChoose: "Choose a replacement",
     swapNoOptions: "No alternatives available right now.",
+    browseTemplates: "Browse workout templates",
     muscleGroups: {
       chest: "Chest",
       back: "Back",
@@ -182,6 +185,34 @@ const en = {
       core: "Core",
       full_body: "Full body",
       cardio: "Cardio",
+    },
+  },
+  templates: {
+    title: "Workout templates",
+    subtitle: "Pick a ready-made routine, or let us choose one for you.",
+    recommendForMe: "Recommend one for me",
+    recommending: "Building your recommendation…",
+    browseAll: "Browse all routines",
+    sessionsPerWeek: "{count}x / week",
+    minutesPerSession: "{count} min",
+    useTemplate: "Use this routine",
+    applying: "Applying…",
+    applied: "Applied",
+    matchesSetup: "Matches your setup",
+    difficulty: {
+      beginner: "Beginner",
+      intermediate: "Intermediate",
+      advanced: "Advanced",
+    },
+    items: {
+      push_pull_legs: "Push / Pull / Legs Split",
+      upper_lower: "Upper / Lower Split",
+      full_body_3day: "Three-Day Full Body",
+      twice_a_week: "Twice-a-Week Routine",
+      quick_circuits: "Quick Circuits",
+      home_bodyweight: "Home Bodyweight Split",
+      strength_5day: "Five-Day Strength Split",
+      core_cardio: "Core & Cardio Focus",
     },
   },
   grocery: {
@@ -254,6 +285,90 @@ const en = {
     },
     legal: "Legal",
     account: "Account",
+  },
+  tips: {
+    title: "Healthy tips",
+    subtitle: "Short, practical basics — no fads, nothing to buy.",
+    items: {
+      reading_labels: {
+        title: "Reading nutrition labels",
+        body: "Check serving size first — every other number on the label is based on it. Compare calories, protein, and added sugar per serving, not per package. A product marketed as \"low fat\" can still be high in sugar, so scan the full panel, not just the front claim.",
+      },
+      protein_timing: {
+        title: "Protein timing basics",
+        body: "Total daily protein matters more than exact timing. Spreading intake across 3-4 meals makes it easier to hit your target and keeps you fuller through the day. Having some protein within a couple hours of training is a reasonable habit, not a strict rule.",
+      },
+      hydration_workouts: {
+        title: "Hydration and workouts",
+        body: "Mild dehydration can make workouts feel harder than they are. Drink water throughout the day, not just during training, and add a bit more on hot days or longer sessions. Thirst is a fine guide for most people — no need to overthink it.",
+      },
+      eating_out: {
+        title: "Eating out without breaking your plan",
+        body: "Look at the menu ahead of time if you can, and prioritize a protein source plus vegetables. Restaurant portions are often larger than a typical serving, so sharing a dish or taking half home is a simple way to stay on track.",
+      },
+      understanding_macros: {
+        title: "Understanding your macros",
+        body: "Protein, carbs, and fat all provide energy but serve different roles: protein supports muscle repair, carbs fuel activity, and fat supports hormones and vitamin absorption. Your targets are a starting point — consistency over days matters more than hitting numbers exactly.",
+      },
+      sleep_recovery: {
+        title: "Sleep and recovery",
+        body: "Muscle adapts and recovers largely during rest, not just during training. Poor sleep can also affect appetite and energy the next day. A consistent sleep schedule is one of the highest-leverage habits for both training and eating well.",
+      },
+      fiber_basics: {
+        title: "Why fiber matters",
+        body: "Fiber slows digestion, helps you feel fuller for longer, and supports gut health. Vegetables, legumes, and whole grains are good sources. If you're increasing fiber intake, add it gradually and drink enough water alongside it.",
+      },
+      reading_progress: {
+        title: "Reading your own progress",
+        body: "Weight can fluctuate day to day from water, sodium, and digestion — a single number rarely tells the full story. Looking at the trend over 2-3 weeks, alongside how your clothes fit and how workouts feel, gives a more reliable picture.",
+      },
+      warm_up_basics: {
+        title: "Why warming up matters",
+        body: "A few minutes of light movement before training increases blood flow to muscles and can reduce injury risk. It doesn't need to be complicated — a lighter version of your first exercise or a short walk is usually enough.",
+      },
+      building_habits: {
+        title: "Building habits that stick",
+        body: "Small, repeatable changes tend to last longer than dramatic overhauls. Picking one or two things to focus on at a time — like a consistent meal time or a weekly workout schedule — makes it easier to stay consistent long-term.",
+      },
+    },
+  },
+  faq: {
+    title: "FAQ",
+    subtitle: "Common questions about how Vellio works.",
+    items: {
+      how_generated: {
+        question: "How are my plans generated?",
+        answer: "Your meal and workout plans are built using standard formulas (like Mifflin-St Jeor for calorie needs) and a curated database of recipes and exercises — not AI. That means results are consistent and explainable, though recipe and exercise variety is limited to what's currently in the database.",
+      },
+      what_data_needed: {
+        question: "What data do you need, and why?",
+        answer: "We ask for basics like age, weight, height, and activity level to calculate calorie and macro targets, plus your goal, equipment access, and dietary restrictions to filter what we recommend. Medical conditions are optional and only used to help you make informed choices — we don't diagnose or treat anything.",
+      },
+      is_it_free: {
+        question: "Is Vellio free?",
+        answer: "Yes, the current version is free to use. There's no payment or subscription required for any feature you see today.",
+      },
+      how_swap_favorites: {
+        question: "How do swapping and favorites work?",
+        answer: "On any meal or workout day, you can swap an item for 2-3 alternatives that fit the same calorie range or muscle group. Favoriting a recipe or exercise makes it more likely to appear in future plans and swap suggestions.",
+      },
+      change_goals: {
+        question: "Can I change my goal or details later?",
+        answer: "Yes — update your profile any time from Profile → Edit profile. Changing your stats, goal, or equipment regenerates your current week's plan to match.",
+      },
+      data_privacy: {
+        question: "Is my data private?",
+        answer: "Your profile, logs, and progress photos are private by default and only visible to you. Progress photos are stored securely and accessed through short-lived signed links, never public URLs.",
+      },
+      progress_tracking: {
+        question: "How does progress tracking work?",
+        answer: "Log your weight, optional body measurements, and an optional photo whenever you like. You can also mark workouts complete from the daily view. Your progress page charts these over time.",
+      },
+      medical_conditions: {
+        question: "What if I have a medical condition?",
+        answer: "Vellio is not a substitute for medical advice. If you have a health condition, are pregnant, or take medication, talk to a doctor before starting a new eating or exercise plan — see the full disclaimer for details.",
+      },
+    },
   },
 };
 

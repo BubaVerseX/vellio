@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Dumbbell } from "lucide-react";
+import { Dumbbell, LayoutGrid } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getServerDictionary } from "@/lib/i18n/serverLocale";
 import { format } from "@/lib/i18n/format";
@@ -24,8 +24,14 @@ export default async function WorkoutsPage() {
 
   if (!workoutPlan) {
     return (
-      <div className="py-10">
+      <div className="flex flex-col gap-6 py-10">
         <EmptyState icon={Dumbbell} title={t.workouts.emptyTitle} description={t.workouts.emptyBody} />
+        <Link href="/workouts/templates">
+          <Card className="flex items-center justify-center gap-2 transition-all hover:translate-y-[-1px]">
+            <LayoutGrid strokeWidth={1.8} className="h-4 w-4 text-[var(--color-accent)]" />
+            <span className="text-sm font-bold">{t.workouts.browseTemplates}</span>
+          </Card>
+        </Link>
       </div>
     );
   }
@@ -43,6 +49,15 @@ export default async function WorkoutsPage() {
               : `${t.workouts.settingHome} / ${t.workouts.settingGym}`}
         </p>
       </div>
+
+      <Link href="/workouts/templates">
+        <Card className="flex items-center justify-between transition-all hover:translate-y-[-1px]">
+          <span className="flex items-center gap-2 text-sm font-bold">
+            <LayoutGrid strokeWidth={1.8} className="h-4 w-4 text-[var(--color-accent)]" />
+            {t.workouts.browseTemplates}
+          </span>
+        </Card>
+      </Link>
 
       <div className="flex flex-col gap-3">
         {DAYS_OF_WEEK.map((day) => {

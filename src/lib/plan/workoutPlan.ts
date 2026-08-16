@@ -83,24 +83,21 @@ function pickExercisesForFocus(
 }
 
 /**
- * Formula/database-driven workout plan generator. This is the v1 implementation —
- * swap the body of this function for an AI-generation call later without touching
- * callers (see `generatePlan.ts`).
+ * Shared core: lays a focus cycle across a week at the given training
+ * frequency and fills each training day with exercises from `pool`. Used by
+ * both the profile-driven generator and template application, so template
+ * selection reuses the exact same exercise-picking logic (and favorites
+ * prioritization) as normal plan generation.
  */
-export function generateWorkoutPlanData(
-  profile: Profile,
-  exercises: Exercise[],
-  weekStart: string,
-  setting: "home" | "gym" | "both",
-  favoriteExerciseIds: Set<string> = new Set()
+function buildWeeklyWorkoutPlan(
+  daysPerWeek: number,
+  exerciseCount: number,
+  focusCycle: string[],
+  pool: Exercise[],
+  seedKey: string,
+  favoriteExerciseIds: Set<string>
 ): WorkoutPlanData {
-  const goal = profile.goal ?? "maintain";
-  const focusCycle = FOCUS_CYCLES[goal] ?? FOCUS_CYCLES.maintain;
-  const daysPerWeek = daysPerWeekFromTime(profile.time_available_minutes);
-  const exerciseCount = exerciseCountFromTime(profile.time_available_minutes);
   const schedule = buildWeeklySchedule(daysPerWeek);
-  const pool = eligibleExercisesForSetting(exercises, setting);
-
   const days = {} as Record<DayKey, DayWorkoutPlan>;
   let trainingDayIndex = 0;
 
@@ -117,7 +114,7 @@ export function generateWorkoutPlanData(
       pool,
       focus,
       exerciseCount,
-      `${profile.id}-${weekStart}-${day}-${focus}`,
+      `${seedKey}-${day}-${focus}`,
       favoriteExerciseIds
     );
 
@@ -133,4 +130,54 @@ export function generateWorkoutPlanData(
   });
 
   return { days };
+}
+
+/**
+ * Formula/database-driven workout plan generator. This is the v1 implementation —
+ * swap the body of this function for an AI-generation call later without touching
+ * callers (see `generatePlan.ts`).
+ */
+export function generateWorkoutPlanData(
+  profile: Profile,
+  exercises: Exercise[],
+  weekStart: string,
+  setting: "home" | "gym" | "both",
+  favoriteExerciseIds: Set<string> = new Set()
+): WorkoutPlanData {
+  const goal = profile.goal ?? "maintain";
+  const focusCycle = FOCUS_CYCLES[goal] ?? FOCUS_CYCLES.maintain;
+  const daysPerWeek = daysPerWeekFromTime(profile.time_available_minutes);
+  const exerciseCount = exerciseCountFromTime(profile.time_available_minutes);
+  const pool = eligibleExercisesForSetting(exercises, setting);
+
+  return buildWeeklyWorkoutPlan(
+    daysPerWeek,
+    exerciseCount,
+    focusCycle,
+    pool,
+    `${profile.id}-${weekStart}`,
+    favoriteExerciseIds
+  );
+}
+
+/** Applies a static template (see lib/content/workoutTemplates.ts) instead of
+ * deriving schedule/focus from the user's profile. Exercise selection and
+ * favorites prioritization still go through the same shared core. */
+export function generateWorkoutPlanFromTemplate(
+  template: { sessionsPerWeek: number; minutesPerSession: number; equipment: "home" | "gym" | "both"; focusSequence: string[] },
+  exercises: Exercise[],
+  seedKey: string,
+  favoriteExerciseIds: Set<string> = new Set()
+): WorkoutPlanData {
+  const exerciseCount = exerciseCountFromTime(template.minutesPerSession);
+  const pool = eligibleExercisesForSetting(exercises, template.equipment);
+
+  return buildWeeklyWorkoutPlan(
+    template.sessionsPerWeek,
+    exerciseCount,
+    template.focusSequence,
+    pool,
+    seedKey,
+    favoriteExerciseIds
+  );
 }

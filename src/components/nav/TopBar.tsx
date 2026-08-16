@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Bell, Settings, ShieldAlert, LogOut, ChevronDown } from "lucide-react";
+import { Bell, Settings, ShieldAlert, LogOut, ChevronDown, Lightbulb, HelpCircle } from "lucide-react";
 import { useLocale } from "@/lib/i18n";
 import { createClient } from "@/lib/supabase/client";
 import { Avatar } from "@/components/ui/Avatar";
@@ -69,6 +69,22 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
                 >
                   <Settings strokeWidth={1.8} className="h-4 w-4 text-[var(--color-text-secondary)]" />
                   {t.nav.settings}
+                </Link>
+                <Link
+                  href="/tips"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-black/[0.03]"
+                >
+                  <Lightbulb strokeWidth={1.8} className="h-4 w-4 text-[var(--color-text-secondary)]" />
+                  {t.nav.tips}
+                </Link>
+                <Link
+                  href="/faq"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-black/[0.03]"
+                >
+                  <HelpCircle strokeWidth={1.8} className="h-4 w-4 text-[var(--color-text-secondary)]" />
+                  {t.nav.faq}
                 </Link>
                 <Link
                   href="/legal/disclaimer"

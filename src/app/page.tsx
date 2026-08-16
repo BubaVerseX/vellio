@@ -57,7 +57,13 @@ export default function LandingPage() {
         </div>
       </main>
 
-      <footer className="flex flex-col items-center gap-2 py-6 text-center text-xs text-[var(--color-text-tertiary)]">
+      <footer className="flex flex-col items-center gap-3 py-6 text-center text-xs text-[var(--color-text-tertiary)] sm:flex-row sm:justify-center sm:gap-5">
+        <Link href="/tips" className="underline underline-offset-2">
+          {t.nav.tips}
+        </Link>
+        <Link href="/faq" className="underline underline-offset-2">
+          {t.nav.faq}
+        </Link>
         <Link href="/legal/disclaimer" className="underline underline-offset-2">
           {t.nav.disclaimer}
         </Link>
