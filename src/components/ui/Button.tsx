@@ -1,7 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "primary" | "selected" | "ghost";
+type ButtonVariant = "primary" | "selected" | "ghost" | "accent";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -20,6 +20,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         !disabled && variant === "primary" && "soft-raised soft-raised-tappable text-[var(--color-text-primary)]",
         !disabled && variant === "selected" && "soft-pressed text-[var(--color-accent)]",
         !disabled && variant === "ghost" && "soft-flat text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]",
+        !disabled &&
+          variant === "accent" &&
+          "bg-[var(--color-accent)] text-white shadow-[0_10px_24px_rgba(255,87,34,0.35)] transition-transform active:scale-[0.98]",
         disabled && "soft-disabled",
         className
       )}

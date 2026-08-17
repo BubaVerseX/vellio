@@ -30,8 +30,33 @@ export default async function LandingPage() {
       </header>
 
       <main className="flex flex-1 flex-col gap-20 py-16 md:gap-28 md:py-24">
-        <div className="gradient-wash-mixed relative -mx-5 flex flex-col items-center gap-10 rounded-[32px] px-5 py-12 md:mx-0 md:flex-row md:items-center md:gap-14 md:px-14 md:py-16">
-          <div className="flex flex-1 flex-col items-center gap-6 text-center md:items-start md:text-left">
+        <div className="gradient-hero-duotone relative -mx-5 flex flex-col items-center gap-10 overflow-hidden rounded-[32px] px-5 py-12 md:mx-0 md:flex-row md:items-center md:gap-14 md:px-14 md:py-16">
+          <div
+            className="hero-blob-decoration -top-16 -left-20 h-64 w-64 bg-[var(--color-accent)]/25 md:h-80 md:w-80"
+            aria-hidden
+          />
+          <div
+            className="hero-blob-decoration -right-20 -bottom-24 h-72 w-72 bg-[var(--color-accent-2)]/20 md:h-96 md:w-96"
+            aria-hidden
+          />
+          <div className="relative z-10 flex flex-1 flex-col items-center gap-6 text-center md:items-start md:text-left">
+            <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start">
+              {(
+                [
+                  ["lose_weight", t.onboarding.goalLose],
+                  ["gain_weight", t.onboarding.goalGain],
+                  ["build_muscle", t.onboarding.goalMuscle],
+                  ["maintain", t.onboarding.goalMaintain],
+                ] as const
+              ).map(([key, label]) => (
+                <span
+                  key={key}
+                  className="soft-raised-sm rounded-full px-3.5 py-1.5 text-xs font-bold text-[var(--color-text-secondary)]"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
             <h1 className="text-[46px] leading-[0.98] font-extrabold tracking-[-0.03em] md:text-[76px]">
               {t.landing.headline}
             </h1>
@@ -39,10 +64,12 @@ export default async function LandingPage() {
               {t.landing.subhead}
             </p>
             <Link href="/get-started">
-              <Button className="mt-2 !px-10 !py-5 text-lg">{t.landing.cta}</Button>
+              <Button variant="accent" className="mt-2 !px-10 !py-5 text-lg">
+                {t.landing.cta}
+              </Button>
             </Link>
           </div>
-          <div className="flex shrink-0 flex-col items-center gap-2">
+          <div className="relative z-10 flex shrink-0 flex-col items-center gap-2">
             <BlobImage
               src={hero?.url}
               alt=""

@@ -189,6 +189,29 @@ button.soft-raised:active,
   color: transparent;
 }
 
+/* Stronger diagonal duotone for the landing hero specifically — more
+   saturated than the wash utilities above, which stay subtle for
+   content surfaces. */
+.gradient-hero-duotone {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 87, 34, 0.32) 0%,
+    rgba(255, 138, 80, 0.16) 32%,
+    rgba(13, 110, 253, 0.14) 68%,
+    rgba(13, 110, 253, 0.3) 100%
+  );
+}
+
+/* Soft oversized blob shapes that peek in from a container's edges as
+   background decoration — low opacity, blurred, never interactive. */
+.hero-blob-decoration {
+  position: absolute;
+  border-radius: 62% 38% 55% 45% / 45% 55% 45% 55%;
+  filter: blur(46px);
+  pointer-events: none;
+  z-index: 0;
+}
+
 /* ============================================================
    Scrollbars off the mobile bottom nav gutter
    ============================================================ */
