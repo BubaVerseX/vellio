@@ -1,75 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
+import type { Tables } from "@/lib/supabase/database.types";
 import { getFavoriteIds } from "@/lib/actions/favorites";
 import { currentWeekStart } from "@/lib/plan/weekDate";
 import { generateMealPlanData, type MealPlanData } from "@/lib/plan/mealPlan";
 import { generateWorkoutPlanData, type WorkoutPlanData } from "@/lib/plan/workoutPlan";
 import { calculateBMR, calculateCalorieTarget, calculateMacros, calculateTDEE, type MacroTargets } from "@/lib/plan/nutrition";
-import type { Tables } from "@/lib/supabase/database.types";
 import { generateAiPlan } from "./generateAiPlan";
 import { computeWeightProjection, PROJECTION_HORIZON_WEEKS } from "./projection";
+import { hasChangedMeaningfully, snapshotFromProfile, type ProfileSnapshot } from "./regenerationCap";
 
-type ProfileSnapshot = {
-  goal: string | null;
-  weight_kg: number | null;
-  activity_level: string | null;
-  height_cm: number | null;
-  age: number | null;
-  sex: string | null;
-  allergies: string[];
-  dietary_restrictions: string[];
-  equipment_setting: string | null;
-  time_available_minutes: number | null;
-};
-
-const WEIGHT_CHANGE_THRESHOLD_KG = 3;
-const TIME_CHANGE_THRESHOLD_MINUTES = 20;
-
-function snapshotFromProfile(profile: Tables<"profiles">): ProfileSnapshot {
-  return {
-    goal: profile.goal,
-    weight_kg: profile.weight_kg,
-    activity_level: profile.activity_level,
-    height_cm: profile.height_cm,
-    age: profile.age,
-    sex: profile.sex,
-    allergies: profile.allergies ?? [],
-    dietary_restrictions: profile.dietary_restrictions ?? [],
-    equipment_setting: profile.equipment_setting,
-    time_available_minutes: profile.time_available_minutes,
-  };
-}
-
-function sameSet(a: string[], b: string[]) {
-  const sa = [...a].sort();
-  const sb = [...b].sort();
-  return sa.length === sb.length && sa.every((v, i) => v === sb[i]);
-}
-
-/** Only regenerate when the profile has drifted meaningfully since the last
- * generation — not on every visit. A goal change, an equipment/activity
- * change, or a weight/time swing past the threshold all qualify. */
-function hasChangedMeaningfully(prev: ProfileSnapshot, next: ProfileSnapshot): boolean {
-  if (prev.goal !== next.goal) return true;
-  if (prev.equipment_setting !== next.equipment_setting) return true;
-  if (prev.activity_level !== next.activity_level) return true;
-  if (prev.sex !== next.sex) return true;
-  if (!sameSet(prev.allergies, next.allergies)) return true;
-  if (!sameSet(prev.dietary_restrictions, next.dietary_restrictions)) return true;
-
-  if (prev.weight_kg != null && next.weight_kg != null) {
-    if (Math.abs(prev.weight_kg - next.weight_kg) >= WEIGHT_CHANGE_THRESHOLD_KG) return true;
-  } else if (prev.weight_kg !== next.weight_kg) {
-    return true;
-  }
-
-  if (prev.time_available_minutes != null && next.time_available_minutes != null) {
-    if (Math.abs(prev.time_available_minutes - next.time_available_minutes) >= TIME_CHANGE_THRESHOLD_MINUTES) {
-      return true;
-    }
-  }
-
-  return false;
-}
+export type { ProfileSnapshot };
 
 export type ProjectionData = {
   horizonWeeks: number;
