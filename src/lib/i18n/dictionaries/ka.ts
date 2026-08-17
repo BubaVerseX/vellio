@@ -140,6 +140,11 @@ const ka: Dictionary = {
     viewWorkoutPlan: "ვარჯიშის გეგმის ნახვა",
     logWeight: "დღევანდელი წონის დამატება",
     weeklyProgress: "ამ კვირას",
+    featuredExercises: "{count} ვარჯიში",
+    trainStrength: "ძალის ვარჯიში",
+    trainCardio: "კარდიო",
+    trainHome: "სახლის ვარჯიში",
+    trainOutdoor: "გარე ვარჯიში",
   },
   meals: {
     title: "კვების გეგმა",

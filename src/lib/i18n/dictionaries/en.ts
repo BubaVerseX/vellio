@@ -138,6 +138,11 @@ const en = {
     viewWorkoutPlan: "View workout plan",
     logWeight: "Log today's weight",
     weeklyProgress: "This week",
+    featuredExercises: "{count} exercises",
+    trainStrength: "Strength training",
+    trainCardio: "Cardio",
+    trainHome: "Home workout",
+    trainOutdoor: "Outdoor training",
   },
   meals: {
     title: "Meal plan",

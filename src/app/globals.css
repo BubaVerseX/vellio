@@ -154,6 +154,42 @@ button.soft-raised:active,
 }
 
 /* ============================================================
+   Gradient energy — for hero/featured surfaces and card accents
+   only (per design spec, body/content stays flat). Built from the
+   same orange/blue accent pair used in BlobImage's fallback
+   gradients, just softened for use as washes/tints rather than
+   solid fills.
+   ============================================================ */
+
+.gradient-wash-warm {
+  background: radial-gradient(120% 100% at 15% 0%, rgba(255, 87, 34, 0.14) 0%, rgba(255, 87, 34, 0) 60%);
+}
+
+.gradient-wash-cool {
+  background: radial-gradient(120% 100% at 85% 100%, rgba(13, 110, 253, 0.12) 0%, rgba(13, 110, 253, 0) 60%);
+}
+
+.gradient-wash-mixed {
+  background: radial-gradient(110% 90% at 10% 0%, rgba(255, 87, 34, 0.13) 0%, transparent 55%),
+    radial-gradient(110% 90% at 90% 100%, rgba(13, 110, 253, 0.11) 0%, transparent 55%);
+}
+
+.gradient-tint-primary {
+  background: linear-gradient(135deg, rgba(255, 87, 34, 0.14) 0%, rgba(255, 87, 34, 0.03) 100%);
+}
+
+.gradient-tint-secondary {
+  background: linear-gradient(135deg, rgba(13, 110, 253, 0.14) 0%, rgba(13, 110, 253, 0.03) 100%);
+}
+
+.gradient-text-mixed {
+  background: linear-gradient(120deg, var(--color-accent) 0%, var(--color-accent-2) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ============================================================
    Scrollbars off the mobile bottom nav gutter
    ============================================================ */
 

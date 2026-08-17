@@ -22,8 +22,8 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-4 bg-[var(--color-bg)] px-4 py-4 md:px-8">
-      <Link href="/home" className="text-xl font-extrabold tracking-tight">
+    <header className="sticky top-0 z-30 flex items-center justify-between gap-4 bg-[var(--color-bg)] px-4 py-5 md:px-8">
+      <Link href="/home" className="text-2xl font-extrabold tracking-tight">
         {t.common.appName}
       </Link>
 
@@ -35,7 +35,7 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
         <button
           type="button"
           aria-label={t.nav.notifications}
-          className="soft-raised soft-raised-tappable flex h-11 w-11 items-center justify-center rounded-2xl"
+          className="soft-raised soft-raised-tappable flex h-12 w-12 items-center justify-center rounded-2xl"
         >
           <Bell strokeWidth={1.8} className="h-5 w-5 text-[var(--color-text-secondary)]" />
         </button>
@@ -44,9 +44,9 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
-            className="soft-raised soft-raised-tappable flex items-center gap-1 rounded-2xl p-1.5 pr-2"
+            className="soft-raised soft-raised-tappable flex items-center gap-1.5 rounded-2xl p-1.5 pr-2.5"
           >
-            <Avatar name={fullName} size={32} />
+            <Avatar name={fullName} size={36} />
             <ChevronDown strokeWidth={1.8} className="h-4 w-4 text-[var(--color-text-tertiary)]" />
           </button>
 

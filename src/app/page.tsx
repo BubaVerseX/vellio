@@ -1,18 +1,22 @@
-"use client";
-
 import Link from "next/link";
 import { Utensils, Dumbbell, LineChart } from "lucide-react";
-import { useLocale } from "@/lib/i18n";
+import { getServerDictionary } from "@/lib/i18n/serverLocale";
+import { ensureFeatureImages } from "@/lib/images/ensureFeatureImages";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { BlobImage } from "@/components/ui/BlobImage";
+import { ImageAttribution } from "@/components/ui/ImageAttribution";
 import { LanguageSwitch } from "@/components/LanguageSwitch";
 
-export default function LandingPage() {
-  const { t } = useLocale();
+export default async function LandingPage() {
+  const { t } = await getServerDictionary();
+  const images = await ensureFeatureImages([
+    { id: "hero_landing", query: "strength training athlete workout gym" },
+  ]);
+  const hero = images.get("hero_landing");
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-5 py-6 md:px-8">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-5 py-6 md:px-8">
       <header className="flex items-center justify-between">
         <span className="text-xl font-extrabold tracking-tight">{t.common.appName}</span>
         <div className="flex items-center gap-3">
@@ -25,17 +29,31 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col items-center gap-10 py-12 md:py-20">
-        <div className="flex max-w-2xl flex-col items-center gap-5 text-center">
-          <h1 className="text-[44px] font-extrabold tracking-[-0.03em] md:text-[58px]">
-            {t.landing.headline}
-          </h1>
-          <p className="max-w-lg text-base text-[var(--color-text-secondary)] md:text-lg">
-            {t.landing.subhead}
-          </p>
-          <Link href="/get-started">
-            <Button className="mt-2 !px-8 !py-4 text-base">{t.landing.cta}</Button>
-          </Link>
+      <main className="flex flex-1 flex-col gap-20 py-16 md:gap-28 md:py-24">
+        <div className="gradient-wash-mixed relative -mx-5 flex flex-col items-center gap-10 rounded-[32px] px-5 py-12 md:mx-0 md:flex-row md:items-center md:gap-14 md:px-14 md:py-16">
+          <div className="flex flex-1 flex-col items-center gap-6 text-center md:items-start md:text-left">
+            <h1 className="text-[46px] leading-[0.98] font-extrabold tracking-[-0.03em] md:text-[76px]">
+              {t.landing.headline}
+            </h1>
+            <p className="max-w-lg text-lg text-[var(--color-text-secondary)] md:text-xl">
+              {t.landing.subhead}
+            </p>
+            <Link href="/get-started">
+              <Button className="mt-2 !px-10 !py-5 text-lg">{t.landing.cta}</Button>
+            </Link>
+          </div>
+          <div className="flex shrink-0 flex-col items-center gap-2">
+            <BlobImage
+              src={hero?.url}
+              alt=""
+              icon={Dumbbell}
+              variant={1}
+              className="h-64 w-64 md:h-[26rem] md:w-[26rem]"
+              sizes="(min-width: 768px) 416px, 256px"
+              preload
+            />
+            <ImageAttribution name={hero?.attributionName} url={hero?.attributionUrl} />
+          </div>
         </div>
 
         <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-3">

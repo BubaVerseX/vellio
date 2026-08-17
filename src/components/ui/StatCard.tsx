@@ -9,10 +9,21 @@ interface StatCardProps {
 
 export function StatCard({ value, label, accent = "none", className }: StatCardProps) {
   return (
-    <div className={cn("soft-raised flex flex-col gap-1 rounded-2xl p-4", className)}>
+    <div
+      className={cn(
+        "soft-raised relative flex flex-col gap-1 overflow-hidden rounded-2xl p-4",
+        className
+      )}
+    >
+      {accent === "primary" && (
+        <div className="gradient-tint-primary pointer-events-none absolute inset-0" />
+      )}
+      {accent === "secondary" && (
+        <div className="gradient-tint-secondary pointer-events-none absolute inset-0" />
+      )}
       <span
         className={cn(
-          "text-2xl font-extrabold tracking-tight",
+          "relative text-2xl font-extrabold tracking-tight",
           accent === "primary" && "text-[var(--color-accent)]",
           accent === "secondary" && "text-[var(--color-accent-2)]",
           accent === "none" && "text-[var(--color-text-primary)]"
@@ -20,7 +31,7 @@ export function StatCard({ value, label, accent = "none", className }: StatCardP
       >
         {value}
       </span>
-      <span className="text-xs font-medium text-[var(--color-text-tertiary)]">{label}</span>
+      <span className="relative text-xs font-medium text-[var(--color-text-tertiary)]">{label}</span>
     </div>
   );
 }

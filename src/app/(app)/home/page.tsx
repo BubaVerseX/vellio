@@ -17,6 +17,8 @@ import { ImageAttribution } from "@/components/ui/ImageAttribution";
 import { FreePreviewBanner } from "@/components/FreePreviewBanner";
 import { QuickMealLogToggle } from "@/components/QuickMealLogToggle";
 import { WorkoutCompleteButton } from "@/components/WorkoutCompleteButton";
+import { RotatingBanner } from "@/components/RotatingBanner";
+import { ensureFeatureImages } from "@/lib/images/ensureFeatureImages";
 
 const MAIN_SLOTS = ["breakfast", "lunch", "dinner"] as const;
 
@@ -65,6 +67,27 @@ export default async function HomePage() {
     (todayMealLogs ?? []).map((row) => [row.slot, row.status as MealLogStatus])
   );
 
+  const bannerImages = await ensureFeatureImages([
+    { id: "banner_strength", query: "strength training weightlifting" },
+    { id: "banner_cardio", query: "cardio running fitness" },
+    { id: "banner_home", query: "home workout bodyweight exercise" },
+    { id: "banner_outdoor", query: "outdoor training athlete" },
+  ]);
+  const bannerSlides = [
+    { id: "banner_strength", label: t.home.trainStrength },
+    { id: "banner_cardio", label: t.home.trainCardio },
+    { id: "banner_home", label: t.home.trainHome },
+    { id: "banner_outdoor", label: t.home.trainOutdoor },
+  ].map(({ id, label }) => {
+    const img = bannerImages.get(id);
+    return { label, url: img?.url, attributionName: img?.attributionName, attributionUrl: img?.attributionUrl };
+  });
+
+  const featuredExercise =
+    todayWorkout?.type === "workout" && todayWorkout.exercises.length > 0
+      ? exerciseMap.get(todayWorkout.exercises[0].exerciseId)
+      : undefined;
+
   return (
     <div className="flex flex-col gap-6 py-6">
       <div>
@@ -89,6 +112,8 @@ export default async function HomePage() {
         <StatCard value={workoutsCompleted} label={t.progress.workoutsThisWeek} />
         <StatCard value={profile?.goal ? t.onboarding[goalLabelKey(profile.goal)] : "—"} label={t.onboarding.goal} />
       </div>
+
+      <RotatingBanner slides={bannerSlides} />
 
       <Card>
         <div className="mb-4 flex items-center justify-between">
@@ -195,11 +220,37 @@ export default async function HomePage() {
           </Link>
         </div>
         {todayWorkout?.type === "workout" ? (
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-bold text-[var(--color-accent-2)]">
-              {t.workouts.muscleGroups[todayWorkout.focus as keyof typeof t.workouts.muscleGroups] ??
-                todayWorkout.focus}
-            </span>
+          <div className="flex flex-col gap-3">
+            {featuredExercise && (
+              <div className="gradient-tint-secondary relative flex items-center gap-4 overflow-hidden rounded-2xl p-3">
+                <BlobImage
+                  src={featuredExercise.image_url}
+                  alt={featuredExercise.name}
+                  icon={Dumbbell}
+                  variant={3}
+                  className="h-24 w-24 shrink-0"
+                  sizes="96px"
+                />
+                <div className="min-w-0">
+                  <span className="block text-xs font-bold uppercase tracking-wide text-[var(--color-accent-2)]">
+                    {t.workouts.muscleGroups[todayWorkout.focus as keyof typeof t.workouts.muscleGroups] ??
+                      todayWorkout.focus}
+                  </span>
+                  <span className="block text-lg font-extrabold tracking-tight">
+                    {localizedField(featuredExercise, "name", "name_ka", locale)}
+                  </span>
+                  <span className="block text-sm text-[var(--color-text-secondary)]">
+                    {format(t.home.featuredExercises, { count: todayWorkout.exercises.length })}
+                  </span>
+                </div>
+              </div>
+            )}
+            {!featuredExercise && (
+              <span className="text-sm font-bold text-[var(--color-accent-2)]">
+                {t.workouts.muscleGroups[todayWorkout.focus as keyof typeof t.workouts.muscleGroups] ??
+                  todayWorkout.focus}
+              </span>
+            )}
             {todayWorkout.exercises.map((ex) => {
               const exercise = exerciseMap.get(ex.exerciseId);
               if (!exercise) return null;

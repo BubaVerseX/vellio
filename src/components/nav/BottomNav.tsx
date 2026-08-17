@@ -11,7 +11,7 @@ export function BottomNav() {
   const { t } = useLocale();
 
   return (
-    <nav className="soft-raised fixed inset-x-4 bottom-4 z-40 flex items-center justify-around rounded-[28px] px-2 py-2 md:hidden">
+    <nav className="soft-raised fixed inset-x-4 bottom-4 z-40 flex items-center justify-around rounded-[28px] px-2 py-2.5 md:hidden">
       {NAV_ITEMS.map(({ href, key, icon: Icon }) => {
         const active = pathname.startsWith(href);
         return (
@@ -19,20 +19,21 @@ export function BottomNav() {
             key={href}
             href={href}
             className={cn(
-              "flex flex-1 flex-col items-center gap-1 rounded-2xl px-2 py-2 transition-all",
+              "relative flex flex-1 flex-col items-center gap-1 overflow-hidden rounded-2xl px-2 py-2.5 transition-all",
               active && "soft-pressed"
             )}
           >
+            {active && <div className="gradient-tint-primary pointer-events-none absolute inset-0" />}
             <Icon
-              strokeWidth={1.8}
+              strokeWidth={active ? 2.2 : 1.8}
               className={cn(
-                "h-5 w-5",
+                "relative h-6 w-6",
                 active ? "text-[var(--color-accent)]" : "text-[var(--color-text-tertiary)]"
               )}
             />
             <span
               className={cn(
-                "text-[11px] font-semibold",
+                "relative text-[11px] font-bold",
                 active ? "text-[var(--color-text-primary)]" : "text-[var(--color-text-tertiary)]"
               )}
             >

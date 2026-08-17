@@ -11,7 +11,7 @@ export function DesktopNav() {
   const { t } = useLocale();
 
   return (
-    <nav className="soft-raised hidden items-center gap-1 rounded-full p-1.5 md:flex">
+    <nav className="soft-raised hidden items-center gap-1.5 rounded-full p-2 md:flex">
       {NAV_ITEMS.map(({ href, key, icon: Icon }) => {
         const active = pathname.startsWith(href);
         return (
@@ -19,14 +19,15 @@ export function DesktopNav() {
             key={href}
             href={href}
             className={cn(
-              "flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all",
+              "relative flex items-center gap-2 overflow-hidden rounded-full px-5 py-3 text-[15px] font-bold transition-all",
               active
                 ? "soft-pressed text-[var(--color-accent)]"
                 : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
             )}
           >
-            <Icon strokeWidth={1.8} className="h-4 w-4" />
-            {t.nav[key]}
+            {active && <div className="gradient-tint-primary pointer-events-none absolute inset-0" />}
+            <Icon strokeWidth={2} className="relative h-[18px] w-[18px]" />
+            <span className="relative">{t.nav[key]}</span>
           </Link>
         );
       })}
