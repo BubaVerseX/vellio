@@ -80,7 +80,7 @@ ${JSON.stringify(exercisePool)}
 
 Workout guidance: pick a sensible number of training days for the stated time budget and goal (mix rest days in), and for each training day set "focus" to the dominant muscle group trained and list 3-6 exercise ids from the pool matching that focus (or a full_body mix for full_body days).
 
-Progress milestones: ${trajectoryNote} Write 3-5 short, encouraging, text-only milestones tied to realistic points in the plan (e.g. specific weeks or habits) — grounded in the plan and the numbers above. Never describe or imply a change in physical appearance.`;
+Progress milestones: ${trajectoryNote} Write 3-5 short, text-only milestones tied to realistic points in the plan (e.g. specific weeks or habits) — grounded in the plan and the numbers above. Frame each one like a short Georgian toast: open with a brief, warm, slightly poetic line (e.g. "To the week that pushed you further —"), then land on the real grounded number or fact it's tied to. Keep it brief — one toast-like sentence, not a speech. Never describe or imply a change in physical appearance.`;
 }
 
 /**
