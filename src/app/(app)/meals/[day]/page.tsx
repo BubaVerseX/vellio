@@ -193,6 +193,7 @@ export default async function MealDayPage({
                     day={dayKey}
                     slot={slot}
                     date={date}
+                    recipeName={localizedField(recipe, "name", "name_ka", locale)}
                     currentPortion={portionFor(dayPlan, slot)}
                     initialLogStatus={logStatusBySlot.get(slot) ?? null}
                   />

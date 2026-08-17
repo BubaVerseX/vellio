@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Zap, Check, UtensilsCrossed } from "lucide-react";
+import { Zap, Check, UtensilsCrossed, PartyPopper } from "lucide-react";
 import { useLocale } from "@/lib/i18n";
 import { Chip, ChipGroup } from "@/components/ui/Chip";
 import type { DayKey, MealSlotKey } from "@/lib/plan/mealPlan";
@@ -13,6 +13,7 @@ import {
   type MealLogStatus,
 } from "@/lib/actions/mealFriction";
 import { PORTION_OPTIONS } from "@/lib/plan/portions";
+import { SupraCelebrationCard } from "@/components/SupraCelebrationCard";
 import { cn } from "@/lib/utils";
 
 export function MealMainSlotControls({
@@ -20,6 +21,7 @@ export function MealMainSlotControls({
   day,
   slot,
   date,
+  recipeName,
   currentPortion,
   initialLogStatus,
 }: {
@@ -27,6 +29,7 @@ export function MealMainSlotControls({
   day: DayKey;
   slot: MealSlotKey;
   date: string;
+  recipeName: string;
   currentPortion: number;
   initialLogStatus: MealLogStatus | null;
 }) {
@@ -95,7 +98,20 @@ export function MealMainSlotControls({
           <UtensilsCrossed strokeWidth={1.8} className="h-3.5 w-3.5" />
           {t.meals.ateOut}
         </button>
+        <button
+          type="button"
+          onClick={() => handleLogToggle("social")}
+          className={cn(
+            "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold",
+            logStatus === "social" ? "soft-pressed text-[var(--color-accent)]" : "soft-raised text-[var(--color-text-secondary)]"
+          )}
+        >
+          <PartyPopper strokeWidth={1.8} className="h-3.5 w-3.5" />
+          {t.meals.social}
+        </button>
       </div>
+
+      {logStatus === "social" && <SupraCelebrationCard recipeName={recipeName} />}
 
       <div className="flex items-center gap-2">
         <span className="text-[11px] font-semibold text-[var(--color-text-tertiary)]">

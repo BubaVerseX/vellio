@@ -126,10 +126,11 @@ export async function setMealPortion(
   return { success: true };
 }
 
-export type MealLogStatus = "eaten" | "ate_out";
+export type MealLogStatus = "eaten" | "ate_out" | "social";
 
-/** Marks a meal slot eaten or "ate out" without touching the stored plan —
- * the rest of the week stays untouched either way. */
+/** Marks a meal slot eaten, "ate out", or a planned social/feast-style
+ * occasion ("social" — Supra mode) without touching the stored plan — the
+ * rest of the week stays untouched either way. */
 export async function logMealStatus(date: string, slot: MealSlotKey, status: MealLogStatus | null) {
   const supabase = await createClient();
   const user = await getUser();

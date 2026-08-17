@@ -176,8 +176,11 @@ const ka: Dictionary = {
     quickSwap: "სწრაფი შეცვლა",
     markEaten: "შეჭმულია",
     ateOut: "გარეთ ვჭამე",
+    social: "სუფრა",
     portion: "პორცია",
     georgianBadge: "ქართული",
+    supraHeadline: "რას ვზეიმობთ?",
+    supraBody: "ისიამოვნე სუფრით. დანაშაულის გარეშე — ხვალ უბრალოდ დაბალანსდები.",
   },
   workouts: {
     title: "ვარჯიშის გეგმა",

@@ -174,8 +174,11 @@ const en = {
     quickSwap: "Quickest swap",
     markEaten: "Eaten",
     ateOut: "Ate out",
+    social: "Supra",
     portion: "Portion",
     georgianBadge: "Georgian",
+    supraHeadline: "What are we celebrating?",
+    supraBody: "Enjoy the table. No guilt, just balance tomorrow.",
   },
   workouts: {
     title: "Workout plan",
