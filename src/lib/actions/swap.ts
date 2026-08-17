@@ -4,6 +4,8 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { getFavoriteIds } from "./favorites";
 import { getMealAlternatives, getExerciseAlternatives } from "@/lib/plan/alternatives";
+import { ensureRecipeImages, ensureExerciseImages } from "@/lib/images/ensureImages";
+import { requireActivePremium } from "@/lib/premium/requireActivePremium";
 import { computeDayTotalCalories, type DayKey, type MealPlanData } from "@/lib/plan/mealPlan";
 import type { WorkoutPlanData } from "@/lib/plan/workoutPlan";
 
@@ -50,7 +52,7 @@ export async function fetchMealAlternatives(weekStart: string, day: DayKey, slot
 
   return {
     current: currentRecipe,
-    alternatives,
+    alternatives: await ensureRecipeImages(alternatives),
     favoriteIds: [...favoriteIds],
   };
 }
@@ -64,6 +66,7 @@ export async function applyMealSwap(
   const supabase = await createClient();
   const user = await getUser();
   if (!user) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   const { data: mealRow } = await supabase
     .from("meal_plans")
@@ -144,7 +147,7 @@ export async function fetchExerciseAlternatives(
 
   return {
     current: currentExercise,
-    alternatives,
+    alternatives: await ensureExerciseImages(alternatives),
     favoriteIds: [...favoriteIds],
   };
 }
@@ -158,6 +161,7 @@ export async function applyExerciseSwap(
   const supabase = await createClient();
   const user = await getUser();
   if (!user) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   const [{ data: workoutRow }, { data: newExercise }] = await Promise.all([
     supabase

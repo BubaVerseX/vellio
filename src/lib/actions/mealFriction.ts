@@ -11,6 +11,7 @@ import {
   type MealSlotKey,
 } from "@/lib/plan/mealPlan";
 import type { PortionOption } from "@/lib/plan/portions";
+import { requireActivePremium } from "@/lib/premium/requireActivePremium";
 
 async function getUser() {
   const supabase = await createClient();
@@ -26,6 +27,7 @@ export async function quickSwapToSimplest(weekStart: string, day: DayKey, slot: 
   const supabase = await createClient();
   const user = await getUser();
   if (!user) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   const [{ data: mealRow }, { data: profile }, { data: recipes }] = await Promise.all([
     supabase.from("meal_plans").select("*").eq("user_id", user.id).eq("week_start", weekStart).single(),
@@ -92,6 +94,7 @@ export async function setMealPortion(
   const supabase = await createClient();
   const user = await getUser();
   if (!user) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   const { data: mealRow } = await supabase
     .from("meal_plans")
@@ -131,6 +134,7 @@ export async function logMealStatus(date: string, slot: MealSlotKey, status: Mea
   const supabase = await createClient();
   const user = await getUser();
   if (!user) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   if (status === null) {
     const { error } = await supabase

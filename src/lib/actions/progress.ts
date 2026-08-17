@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { requireActivePremium } from "@/lib/premium/requireActivePremium";
 
 async function getUserId() {
   const supabase = await createClient();
@@ -15,6 +16,7 @@ export async function logWeight(date: string, weightKg: number) {
   const supabase = await createClient();
   const userId = await getUserId();
   if (!userId) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(userId))) return { error: "premium_required" };
 
   const { error } = await supabase
     .from("progress_logs")
@@ -30,6 +32,7 @@ export async function setWorkoutCompleted(date: string, completed: boolean) {
   const supabase = await createClient();
   const userId = await getUserId();
   if (!userId) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(userId))) return { error: "premium_required" };
 
   const { error } = await supabase
     .from("progress_logs")

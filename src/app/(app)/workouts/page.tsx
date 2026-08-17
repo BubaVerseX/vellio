@@ -9,6 +9,7 @@ import { DAYS_OF_WEEK } from "@/lib/plan/mealPlan";
 import { dayLabel } from "@/lib/plan/dayLabel";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { FreePreviewBanner } from "@/components/FreePreviewBanner";
 
 export default async function WorkoutsPage() {
   const supabase = await createClient();
@@ -20,7 +21,7 @@ export default async function WorkoutsPage() {
 
   const weekStart = currentWeekStart();
   const todayKey = dayKeyForDate();
-  const { workoutPlan } = await getOrCreateWeekPlans(user.id, weekStart);
+  const { workoutPlan, isEphemeral } = await getOrCreateWeekPlans(user.id, weekStart);
 
   if (!workoutPlan) {
     return (
@@ -49,6 +50,8 @@ export default async function WorkoutsPage() {
               : `${t.workouts.settingHome} / ${t.workouts.settingGym}`}
         </p>
       </div>
+
+      {isEphemeral && <FreePreviewBanner />}
 
       <Link href="/workouts/templates">
         <Card className="flex items-center justify-between transition-all hover:translate-y-[-1px]">

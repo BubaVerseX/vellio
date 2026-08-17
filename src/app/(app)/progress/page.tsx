@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { CheckCircle2, XCircle, Minus, Images } from "lucide-react";
+import { CheckCircle2, XCircle, Minus, Images, Flag } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getServerDictionary } from "@/lib/i18n/serverLocale";
+import { format } from "@/lib/i18n/format";
+import { isSubscriptionActive } from "@/lib/premium/access";
+import type { ProjectionData } from "@/lib/ai/ensureAiPlan";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { ProgressLogForm } from "@/components/ProgressLogForm";
@@ -17,9 +20,22 @@ export default async function ProgressPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("weight_kg")
+    .select("weight_kg, subscription_status, subscription_expires_at")
     .eq("id", user.id)
     .single();
+
+  const premium = isSubscriptionActive(profile);
+  const { data: aiPlan } = premium
+    ? await supabase.from("ai_plans").select("projection").eq("user_id", user.id).maybeSingle()
+    : { data: null };
+  const projection = aiPlan?.projection as unknown as ProjectionData | null;
+  const projectedWeight = projection?.series.length
+    ? projection.series.map(({ week, weightKg }) => {
+        const d = new Date();
+        d.setDate(d.getDate() + week * 7);
+        return { date: d.toISOString().slice(0, 10), weight: weightKg };
+      })
+    : undefined;
 
   const ninetyDaysAgo = new Date();
   ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
@@ -86,8 +102,32 @@ export default async function ProgressPage() {
 
       <Card>
         <h2 className="mb-4 text-lg font-extrabold tracking-tight">{t.progress.weightOverTime}</h2>
-        <MetricChartCard series={metricSeries} />
+        <MetricChartCard series={metricSeries} projectedWeight={projectedWeight} />
       </Card>
+
+      {premium && projection && projection.milestones.length > 0 && (
+        <Card className="flex flex-col gap-4">
+          <div>
+            <h2 className="text-lg font-extrabold tracking-tight">{t.progress.projectedTitle}</h2>
+            <p className="text-xs text-[var(--color-text-secondary)]">
+              {format(t.progress.projectedSubtitle, { weeks: projection.horizonWeeks })}
+            </p>
+          </div>
+          <div className="flex flex-col gap-2">
+            {projection.milestones.map((m, i) => (
+              <div key={i} className="soft-pressed flex items-start gap-3 rounded-xl px-4 py-3">
+                <Flag strokeWidth={1.8} className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-accent-2)]" />
+                <div className="min-w-0">
+                  <span className="block text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-tertiary)]">
+                    {m.weekLabel}
+                  </span>
+                  <span className="text-sm text-[var(--color-text-secondary)]">{m.text}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       <Card>
         <ProgressLogForm userId={user.id} defaultWeight={currentWeight ?? undefined} />

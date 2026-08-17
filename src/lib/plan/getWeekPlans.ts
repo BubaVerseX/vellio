@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
-import { generatePlan } from "./generatePlan";
+import { generatePlan, generateEphemeralPlan } from "./generatePlan";
+import { requireActivePremium } from "@/lib/premium/requireActivePremium";
 import type { MealPlanData } from "./mealPlan";
 import type { WorkoutPlanData } from "./workoutPlan";
 import type { MacroTargets } from "./nutrition";
@@ -7,9 +8,16 @@ import type { MacroTargets } from "./nutrition";
 export type WeekPlans = {
   mealPlan: { calorieTarget: number; macros: MacroTargets; planData: MealPlanData } | null;
   workoutPlan: { setting: string; planData: WorkoutPlanData } | null;
+  /** True when this plan is a free-tier preview generated on the fly and
+   * never persisted — every mutation (swap, log, complete) will fail, and
+   * the plan starts fresh again on the next visit. The UI should say so. */
+  isEphemeral?: boolean;
 };
 
-/** Fetches this week's plans, generating them on the fly if they don't exist yet. */
+/** Fetches this week's plans, generating them on the fly if they don't exist
+ * yet. Premium users get a persisted plan (see generatePlan); free users get
+ * a fresh, unsaved preview every time (see generateEphemeralPlan) — this is
+ * the v2.0 premium gate applied at the data-access layer. */
 export async function getOrCreateWeekPlans(userId: string, weekStart: string): Promise<WeekPlans> {
   const supabase = await createClient();
 
@@ -42,14 +50,22 @@ export async function getOrCreateWeekPlans(userId: string, weekStart: string): P
     };
   }
 
-  const generated = await generatePlan(userId, weekStart);
-  if (!generated) return { mealPlan: null, workoutPlan: null };
+  const premium = await requireActivePremium(userId);
 
+  if (premium) {
+    const generated = await generatePlan(userId, weekStart);
+    if (!generated) return { mealPlan: null, workoutPlan: null };
+    return {
+      mealPlan: generated.mealPlan,
+      workoutPlan: { setting: generated.workoutPlan.setting, planData: generated.workoutPlan.planData },
+    };
+  }
+
+  const ephemeral = await generateEphemeralPlan(userId, weekStart);
+  if (!ephemeral) return { mealPlan: null, workoutPlan: null };
   return {
-    mealPlan: generated.mealPlan,
-    workoutPlan: {
-      setting: generated.workoutPlan.setting,
-      planData: generated.workoutPlan.planData,
-    },
+    mealPlan: ephemeral.mealPlan,
+    workoutPlan: { setting: ephemeral.workoutPlan.setting, planData: ephemeral.workoutPlan.planData },
+    isEphemeral: true,
   };
 }

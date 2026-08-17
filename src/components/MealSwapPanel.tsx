@@ -40,11 +40,13 @@ export function MealSwapPanel({ weekStart, day, slot }: { weekStart: string; day
     setApplying(recipeId);
     const result = await applyMealSwap(weekStart, day, slot, recipeId);
     setApplying(null);
-    if (!result.error) {
-      setOpen(false);
-      setAlternatives(null);
-      router.refresh();
+    if (result.error) {
+      setError(result.error === "premium_required" ? t.premium.requiredShort : result.error);
+      return;
     }
+    setOpen(false);
+    setAlternatives(null);
+    router.refresh();
   }
 
   if (!open) {

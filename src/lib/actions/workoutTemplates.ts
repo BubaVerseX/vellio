@@ -6,6 +6,7 @@ import { getFavoriteIds } from "./favorites";
 import { generateWorkoutPlanData, generateWorkoutPlanFromTemplate } from "@/lib/plan/workoutPlan";
 import { currentWeekStart } from "@/lib/plan/generatePlan";
 import { WORKOUT_TEMPLATES } from "@/lib/content/workoutTemplates";
+import { requireActivePremium } from "@/lib/premium/requireActivePremium";
 
 async function getUser() {
   const supabase = await createClient();
@@ -22,6 +23,7 @@ export async function applyWorkoutTemplate(templateId: string) {
   const supabase = await createClient();
   const user = await getUser();
   if (!user) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   const [{ data: exercises }, favoriteExerciseIds] = await Promise.all([
     supabase.from("exercises").select("*"),
@@ -58,6 +60,7 @@ export async function recommendPersonalizedWorkout() {
   const supabase = await createClient();
   const user = await getUser();
   if (!user) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   const [{ data: profile }, { data: exercises }, favoriteExerciseIds] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).single(),

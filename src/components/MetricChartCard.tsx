@@ -25,10 +25,17 @@ const METRICS: { key: keyof MetricSeries; labelKey: "weightMetric" | "waist" | "
   { key: "thighsCm", labelKey: "thighs" },
 ];
 
-export function MetricChartCard({ series }: { series: MetricSeries }) {
+export function MetricChartCard({
+  series,
+  projectedWeight,
+}: {
+  series: MetricSeries;
+  /** Only ever shown against the weight tab — the projection is weight-only. */
+  projectedWeight?: Point[];
+}) {
   const { t } = useLocale();
   const [metric, setMetric] = useState<keyof MetricSeries>("weight");
-  const available = METRICS.filter((m) => series[m.key].length > 0);
+  const available = METRICS.filter((m) => series[m.key].length > 0 || (m.key === "weight" && !!projectedWeight?.length));
   const data = series[metric];
 
   return (
@@ -40,8 +47,8 @@ export function MetricChartCard({ series }: { series: MetricSeries }) {
           </Chip>
         ))}
       </ChipGroup>
-      {data.length > 0 ? (
-        <WeightChart data={data} />
+      {data.length > 0 || (metric === "weight" && projectedWeight?.length) ? (
+        <WeightChart data={data} projectedData={metric === "weight" ? projectedWeight : undefined} />
       ) : (
         <p className="py-8 text-center text-sm text-[var(--color-text-secondary)]">{t.progress.noData}</p>
       )}

@@ -48,11 +48,13 @@ export function ExerciseSwapPanel({
     setApplying(exerciseId);
     const result = await applyExerciseSwap(weekStart, day, exerciseIndex, exerciseId);
     setApplying(null);
-    if (!result.error) {
-      setOpen(false);
-      setAlternatives(null);
-      router.refresh();
+    if (result.error) {
+      setError(result.error === "premium_required" ? t.premium.requiredShort : result.error);
+      return;
     }
+    setOpen(false);
+    setAlternatives(null);
+    router.refresh();
   }
 
   if (!open) {

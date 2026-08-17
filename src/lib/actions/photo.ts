@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { requireActivePremium } from "@/lib/premium/requireActivePremium";
 
 /** Called after a client-side upload to Supabase Storage succeeds. */
 export async function savePhotoPath(date: string, photoPath: string) {
@@ -10,6 +11,7 @@ export async function savePhotoPath(date: string, photoPath: string) {
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   const { error } = await supabase
     .from("progress_logs")

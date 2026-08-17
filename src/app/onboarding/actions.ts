@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { generatePlan, currentWeekStart } from "@/lib/plan/generatePlan";
+import { calculateCalorieTarget } from "@/lib/plan/nutrition";
 
 export type OnboardingInput = {
   fullName: string;
@@ -51,8 +51,19 @@ export async function submitOnboarding(input: OnboardingInput) {
 
   if (updateError) return { error: updateError.message };
 
-  const plan = await generatePlan(user.id, currentWeekStart());
-  if (!plan) return { error: "Could not generate your plan. Please try again." };
+  // Free users' plans are generated fresh on their first visit to /home
+  // (see getOrCreateWeekPlans) rather than persisted here — just confirm
+  // the profile has enough to compute a calorie target so onboarding fails
+  // fast instead of surfacing an empty plan later.
+  const calorieTarget = calculateCalorieTarget({
+    weight_kg: input.weightKg,
+    height_cm: input.heightCm,
+    age: input.age,
+    sex: input.sex,
+    activity_level: input.activityLevel,
+    goal: input.goal,
+  });
+  if (!calorieTarget) return { error: "Could not generate your plan. Please try again." };
 
   return { success: true };
 }

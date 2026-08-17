@@ -25,29 +25,39 @@ export function TemplateGallery({
   const [recommending, setRecommending] = useState(false);
   const [applyingId, setApplyingId] = useState<string | null>(null);
   const [appliedId, setAppliedId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleRecommend() {
     setRecommending(true);
+    setError(null);
     const result = await recommendPersonalizedWorkout();
     setRecommending(false);
-    if (!result.error) {
-      router.push("/workouts");
-      router.refresh();
+    if (result.error) {
+      setError(result.error === "premium_required" ? t.premium.requiredShort : result.error);
+      return;
     }
+    router.push("/workouts");
+    router.refresh();
   }
 
   async function handleUseTemplate(id: string) {
     setApplyingId(id);
+    setError(null);
     const result = await applyWorkoutTemplate(id);
     setApplyingId(null);
-    if (!result.error) {
-      setAppliedId(id);
-      router.refresh();
+    if (result.error) {
+      setError(result.error === "premium_required" ? t.premium.requiredShort : result.error);
+      return;
     }
+    setAppliedId(id);
+    router.refresh();
   }
 
   return (
     <div className="flex flex-col gap-8">
+      {error && (
+        <p className="text-center text-sm font-semibold text-[var(--color-accent)]">{error}</p>
+      )}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card className="flex flex-col items-center gap-3 text-center">
           <div className="soft-pressed flex h-14 w-14 items-center justify-center rounded-2xl">

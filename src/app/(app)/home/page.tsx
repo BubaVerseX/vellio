@@ -14,6 +14,7 @@ import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/Button";
 import { BlobImage } from "@/components/ui/BlobImage";
 import { ImageAttribution } from "@/components/ui/ImageAttribution";
+import { FreePreviewBanner } from "@/components/FreePreviewBanner";
 import { QuickMealLogToggle } from "@/components/QuickMealLogToggle";
 import { WorkoutCompleteButton } from "@/components/WorkoutCompleteButton";
 
@@ -31,7 +32,7 @@ export default async function HomePage() {
 
   const weekStart = currentWeekStart();
   const todayKey = dayKeyForDate();
-  const { mealPlan, workoutPlan } = await getOrCreateWeekPlans(user.id, weekStart);
+  const { mealPlan, workoutPlan, isEphemeral } = await getOrCreateWeekPlans(user.id, weekStart);
 
   const todayMeals = mealPlan?.planData.days[todayKey];
   const todayWorkout = workoutPlan?.planData.days[todayKey];
@@ -71,6 +72,8 @@ export default async function HomePage() {
           {format(t.home.greeting, { name: profile?.full_name?.split(" ")[0] ?? "" })}
         </h1>
       </div>
+
+      {isEphemeral && <FreePreviewBanner />}
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <StatCard

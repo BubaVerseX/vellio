@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { requireActivePremium } from "@/lib/premium/requireActivePremium";
 
 export async function toggleGroceryItem(weekStart: string, ingredientKey: string, checked: boolean) {
   const supabase = await createClient();
@@ -9,6 +10,7 @@ export async function toggleGroceryItem(weekStart: string, ingredientKey: string
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   const { error } = await supabase.from("grocery_list_items").upsert(
     {

@@ -3,12 +3,27 @@
 import { Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 type Point = { date: string; weight: number };
+type MergedPoint = { date: string; weight?: number; projectedWeight?: number };
 
-export function WeightChart({ data }: { data: Point[] }) {
+function mergeSeries(actual: Point[], projected: Point[]): MergedPoint[] {
+  const byDate = new Map<string, MergedPoint>();
+  for (const p of actual) {
+    byDate.set(p.date, { ...(byDate.get(p.date) ?? { date: p.date }), weight: p.weight });
+  }
+  for (const p of projected) {
+    byDate.set(p.date, { ...(byDate.get(p.date) ?? { date: p.date }), projectedWeight: p.weight });
+  }
+  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+export function WeightChart({ data, projectedData }: { data: Point[]; projectedData?: Point[] }) {
+  const hasProjection = !!projectedData?.length;
+  const merged = mergeSeries(data, projectedData ?? []);
+
   return (
     <div className="h-56 w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+        <LineChart data={merged} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
           <XAxis
             dataKey="date"
             tickFormatter={(v: string) => v.slice(5)}
@@ -42,6 +57,17 @@ export function WeightChart({ data }: { data: Point[] }) {
             dot={{ r: 3, fill: "#ff5722", strokeWidth: 0 }}
             activeDot={{ r: 5 }}
           />
+          {hasProjection && (
+            <Line
+              type="monotone"
+              dataKey="projectedWeight"
+              stroke="#0d6efd"
+              strokeWidth={2}
+              strokeDasharray="5 5"
+              dot={false}
+              connectNulls
+            />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>

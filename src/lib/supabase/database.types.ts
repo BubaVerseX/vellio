@@ -14,6 +14,62 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_plans: {
+        Row: {
+          calorie_target: number
+          created_at: string
+          generated_at: string
+          id: string
+          macro_targets: Json
+          meal_plan_data: Json
+          model_id: string | null
+          projection: Json | null
+          source_profile: Json
+          updated_at: string
+          user_id: string
+          workout_plan_data: Json
+          workout_setting: string
+        }
+        Insert: {
+          calorie_target: number
+          created_at?: string
+          generated_at?: string
+          id?: string
+          macro_targets: Json
+          meal_plan_data: Json
+          model_id?: string | null
+          projection?: Json | null
+          source_profile: Json
+          updated_at?: string
+          user_id: string
+          workout_plan_data: Json
+          workout_setting: string
+        }
+        Update: {
+          calorie_target?: number
+          created_at?: string
+          generated_at?: string
+          id?: string
+          macro_targets?: Json
+          meal_plan_data?: Json
+          model_id?: string | null
+          projection?: Json | null
+          source_profile?: Json
+          updated_at?: string
+          user_id?: string
+          workout_plan_data?: Json
+          workout_setting?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_plans_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       exercises: {
         Row: {
           created_at: string
@@ -277,6 +333,9 @@ export type Database = {
           onboarding_completed: boolean
           restrictions_notes: string | null
           sex: string | null
+          subscription_expires_at: string | null
+          subscription_started_at: string | null
+          subscription_status: string
           time_available_minutes: number | null
           updated_at: string
           weight_kg: number | null
@@ -299,6 +358,9 @@ export type Database = {
           onboarding_completed?: boolean
           restrictions_notes?: string | null
           sex?: string | null
+          subscription_expires_at?: string | null
+          subscription_started_at?: string | null
+          subscription_status?: string
           time_available_minutes?: number | null
           updated_at?: string
           weight_kg?: number | null
@@ -321,6 +383,9 @@ export type Database = {
           onboarding_completed?: boolean
           restrictions_notes?: string | null
           sex?: string | null
+          subscription_expires_at?: string | null
+          subscription_started_at?: string | null
+          subscription_status?: string
           time_available_minutes?: number | null
           updated_at?: string
           weight_kg?: number | null

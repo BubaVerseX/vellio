@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Sparkles } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getServerDictionary } from "@/lib/i18n/serverLocale";
+import { isSubscriptionActive } from "@/lib/premium/access";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Avatar } from "@/components/ui/Avatar";
@@ -39,6 +41,18 @@ export default async function ProfilePage() {
         </span>
         <LanguageSwitch />
       </Card>
+
+      <Link href="/upgrade">
+        <Card className="flex items-center justify-between transition-all hover:translate-y-[-1px]">
+          <span className="flex items-center gap-2 text-sm font-bold">
+            <Sparkles strokeWidth={1.8} className="h-4 w-4 text-[var(--color-accent)]" />
+            {t.premium.manageEntry}
+          </span>
+          <span className="text-xs font-bold text-[var(--color-text-tertiary)]">
+            {isSubscriptionActive(profile) ? t.premium.statusActive : t.premium.statusNone}
+          </span>
+        </Card>
+      </Link>
 
       <Link href="/profile/edit">
         <Button className="w-full">{t.profile.editProfile}</Button>

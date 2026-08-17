@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { DayKey } from "@/lib/plan/mealPlan";
 import type { WorkoutPlanData } from "@/lib/plan/workoutPlan";
 import { dateForDay } from "@/lib/plan/weekDate";
+import { requireActivePremium } from "@/lib/premium/requireActivePremium";
 
 async function getUser() {
   const supabase = await createClient();
@@ -22,6 +23,7 @@ export async function rescheduleWorkout(weekStart: string, fromDay: DayKey, toDa
   const user = await getUser();
   if (!user) return { error: "Not authenticated" };
   if (fromDay === toDay) return { error: "Pick a different day" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   const { data: workoutRow } = await supabase
     .from("workout_plans")
@@ -74,6 +76,7 @@ export async function shortenWorkoutDay(weekStart: string, day: DayKey, availabl
   const supabase = await createClient();
   const user = await getUser();
   if (!user) return { error: "Not authenticated" };
+  if (!(await requireActivePremium(user.id))) return { error: "premium_required" };
 
   const { data: workoutRow } = await supabase
     .from("workout_plans")

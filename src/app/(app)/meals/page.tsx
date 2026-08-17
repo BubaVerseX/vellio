@@ -11,6 +11,7 @@ import { localizedField } from "@/lib/plan/localized";
 import { dayLabel } from "@/lib/plan/dayLabel";
 import { Card } from "@/components/ui/Card";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { FreePreviewBanner } from "@/components/FreePreviewBanner";
 
 export default async function MealsPage() {
   const supabase = await createClient();
@@ -22,7 +23,7 @@ export default async function MealsPage() {
 
   const weekStart = currentWeekStart();
   const todayKey = dayKeyForDate();
-  const { mealPlan } = await getOrCreateWeekPlans(user.id, weekStart);
+  const { mealPlan, isEphemeral } = await getOrCreateWeekPlans(user.id, weekStart);
 
   if (!mealPlan) {
     return (
@@ -43,6 +44,8 @@ export default async function MealsPage() {
           {format(t.meals.weekOf, { date: weekStart })}
         </p>
       </div>
+
+      {isEphemeral && <FreePreviewBanner />}
 
       <Card className="flex items-center justify-around text-center">
         <div>
