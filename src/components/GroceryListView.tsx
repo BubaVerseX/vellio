@@ -20,17 +20,24 @@ export function GroceryListView({
 }) {
   const { t } = useLocale();
   const [checked, setChecked] = useState<Record<string, boolean>>(initialChecked);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleToggle(key: string) {
+  async function handleToggle(key: string) {
     const next = !checked[key];
+    setError(null);
     setChecked((prev) => ({ ...prev, [key]: next }));
-    toggleGroceryItem(weekStart, key, next);
+    const result = await toggleGroceryItem(weekStart, key, next);
+    if (result.error) {
+      setChecked((prev) => ({ ...prev, [key]: !next }));
+      setError(result.error === "premium_required" ? t.premium.requiredShort : result.error);
+    }
   }
 
   const nonEmptyCategories = CATEGORY_ORDER.filter((cat) => grouped[cat].length > 0);
 
   return (
     <div className="flex flex-col gap-5">
+      {error && <p className="text-sm font-medium text-[var(--color-accent)]">{error}</p>}
       {nonEmptyCategories.map((category) => (
         <Card key={category} className="flex flex-col gap-2">
           <h2 className="mb-1 text-sm font-extrabold uppercase tracking-wide text-[var(--color-text-tertiary)]">

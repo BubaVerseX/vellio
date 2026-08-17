@@ -49,7 +49,7 @@ export function ProgressLogForm({
     if (weight) {
       const result = await logWeight(today, Number(weight));
       if (result.error) {
-        setError(result.error);
+        setError(result.error === "premium_required" ? t.premium.requiredShort : result.error);
         setPending(false);
         return;
       }
@@ -65,7 +65,7 @@ export function ProgressLogForm({
         thighsCm: measurements.thighsCm ? Number(measurements.thighsCm) : undefined,
       });
       if (result.error) {
-        setError(result.error);
+        setError(result.error === "premium_required" ? t.premium.requiredShort : result.error);
         setPending(false);
         return;
       }
@@ -84,7 +84,12 @@ export function ProgressLogForm({
         setPending(false);
         return;
       }
-      await savePhotoPath(today, path);
+      const photoResult = await savePhotoPath(today, path);
+      if (photoResult.error) {
+        setError(photoResult.error === "premium_required" ? t.premium.requiredShort : photoResult.error);
+        setPending(false);
+        return;
+      }
     }
 
     setPending(false);

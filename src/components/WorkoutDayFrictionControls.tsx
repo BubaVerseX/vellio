@@ -32,7 +32,7 @@ export function WorkoutDayFrictionControls({
     const result = await rescheduleWorkout(weekStart, day, toDay);
     setPending(false);
     if (result.error) {
-      setError(result.error);
+      setError(result.error === "premium_required" ? t.premium.requiredShort : result.error);
       return;
     }
     router.push("/workouts");
@@ -44,7 +44,11 @@ export function WorkoutDayFrictionControls({
     setError(null);
     const result = await shortenWorkoutDay(weekStart, day, minutes);
     setPending(false);
-    if (!result.error) router.refresh();
+    if (result.error) {
+      setError(result.error === "premium_required" ? t.premium.requiredShort : result.error);
+      return;
+    }
+    router.refresh();
   }
 
   return (
@@ -66,6 +70,8 @@ export function WorkoutDayFrictionControls({
           </button>
         ))}
       </div>
+
+      {error && <p className="text-xs font-medium text-[var(--color-accent)]">{error}</p>}
 
       {!showReschedule ? (
         <Button
@@ -97,7 +103,6 @@ export function WorkoutDayFrictionControls({
               </button>
             ))}
           </div>
-          {error && <p className="text-xs font-medium text-[var(--color-accent)]">{error}</p>}
           <button
             type="button"
             onClick={() => setShowReschedule(false)}
