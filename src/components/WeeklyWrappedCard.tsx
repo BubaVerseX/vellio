@@ -4,6 +4,9 @@ import { Download } from "lucide-react";
 import { useLocale } from "@/lib/i18n";
 import { format } from "@/lib/i18n/format";
 import { OrnamentalLinework } from "@/components/ui/OrnamentalLinework";
+import { caloriesToKhinkali, estimateWorkoutCalories } from "@/lib/plan/culturalUnits";
+
+const ESTIMATED_CALORIES_PER_WORKOUT = estimateWorkoutCalories(45);
 
 function drawWrappedCard(
   canvas: HTMLCanvasElement,
@@ -15,6 +18,7 @@ function drawWrappedCard(
     workoutsLabel: string;
     mealsLabel: string;
     streakLabel: string;
+    khinkaliLabel: string;
   }
 ) {
   const width = 800;
@@ -55,6 +59,10 @@ function drawWrappedCard(
   ctx.font = "600 26px -apple-system, sans-serif";
   ctx.fillText(data.workoutsLabel, 64, 430);
 
+  ctx.fillStyle = "rgba(255,255,255,0.55)";
+  ctx.font = "600 20px -apple-system, sans-serif";
+  ctx.fillText(data.khinkaliLabel, 64, 466);
+
   const statY = 620;
   ctx.fillStyle = "#ffffff";
   ctx.font = "800 56px -apple-system, sans-serif";
@@ -81,6 +89,8 @@ export function WeeklyWrappedCard({
   streak: number;
 }) {
   const { t } = useLocale();
+  const khinkaliCount = caloriesToKhinkali(workoutsThisWeek * ESTIMATED_CALORIES_PER_WORKOUT);
+  const khinkaliLabel = format(t.common.khinkaliBurned, { count: khinkaliCount });
 
   function handleDownload() {
     const canvas = document.createElement("canvas");
@@ -92,6 +102,7 @@ export function WeeklyWrappedCard({
       workoutsLabel: t.progress.wrappedWorkouts,
       mealsLabel: t.progress.wrappedMealsOnTarget,
       streakLabel: format(t.home.streakDays, { count: streak }),
+      khinkaliLabel,
     });
     canvas.toBlob((blob) => {
       if (!blob) return;
@@ -115,6 +126,7 @@ export function WeeklyWrappedCard({
             {workoutsThisWeek}/7
           </div>
           <div className="mt-1 text-sm font-semibold text-white/70">{t.progress.wrappedWorkouts}</div>
+          <div className="mt-1 text-xs text-white/45">{khinkaliLabel}</div>
         </div>
 
         <div className="flex gap-8">

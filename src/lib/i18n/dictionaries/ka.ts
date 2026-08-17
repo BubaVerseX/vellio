@@ -20,6 +20,7 @@ const ka: Dictionary = {
     today: "დღეს",
     error: "დაფიქსირდა შეცდომა. გთხოვთ სცადოთ თავიდან.",
     photoBy: "ფოტო: {name} / Unsplash",
+    khinkaliBurned: "≈ {count} ხინკალი დაიწვა",
   },
   nav: {
     home: "მთავარი",

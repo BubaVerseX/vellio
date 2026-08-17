@@ -9,6 +9,7 @@ import { getRecipesByIds, getExercisesByIds, mealIdsFromDay } from "@/lib/plan/l
 import { portionFor } from "@/lib/plan/mealPlan";
 import { localizedField } from "@/lib/plan/localized";
 import { computeWorkoutStreak } from "@/lib/plan/streak";
+import { caloriesToKhinkali, estimateWorkoutCalories } from "@/lib/plan/culturalUnits";
 import type { MealLogStatus } from "@/lib/actions/mealFriction";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
@@ -288,6 +289,11 @@ export default async function HomePage() {
                   {format(t.home.featuredExercises, { count: todayWorkout.exercises.length })}
                   {" · "}
                   {format(t.home.approxDuration, { minutes: profile?.time_available_minutes ?? 30 })}
+                </span>
+                <span className="block text-[11px] text-[var(--color-text-tertiary)]">
+                  {format(t.common.khinkaliBurned, {
+                    count: caloriesToKhinkali(estimateWorkoutCalories(profile?.time_available_minutes ?? 30)),
+                  })}
                 </span>
               </div>
             </div>
