@@ -6,6 +6,29 @@ export type UnsplashImage = {
   attributionUrl: string;
 };
 
+// Unsplash's free tier caps at 50 requests/hour. This is a best-effort,
+// in-memory counter (resets on cold start, not shared across instances) —
+// not a hard limiter, just a log-based early warning so approaching the
+// ceiling shows up in server logs before requests start getting rejected.
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_WARN_THRESHOLD = 40;
+let requestCount = 0;
+let windowStartedAt = Date.now();
+
+function recordUnsplashRequest() {
+  const now = Date.now();
+  if (now - windowStartedAt >= RATE_LIMIT_WINDOW_MS) {
+    requestCount = 0;
+    windowStartedAt = now;
+  }
+  requestCount += 1;
+  if (requestCount >= RATE_LIMIT_WARN_THRESHOLD) {
+    console.warn(
+      `[unsplash] ${requestCount} requests in the current hourly window (free tier limit is 50/hour, per server instance)`
+    );
+  }
+}
+
 /**
  * Searches Unsplash for a single photo matching `query`. Returns null on a
  * missing key, no results, or any request failure — callers fall back to
@@ -22,6 +45,7 @@ export async function searchUnsplashImage(
   const size = options?.size ?? "small";
 
   try {
+    recordUnsplashRequest();
     const res = await fetch(
       `${UNSPLASH_API}/search/photos?query=${encodeURIComponent(query)}&per_page=1&orientation=${orientation}&content_filter=high`,
       {
@@ -45,6 +69,7 @@ export async function searchUnsplashImage(
     // is put to use (not just previewed in search results). Fire-and-forget —
     // this shouldn't block or fail the caching write.
     if (photo.links?.download_location) {
+      recordUnsplashRequest();
       fetch(`${photo.links.download_location}&client_id=${accessKey}`).catch(() => {});
     }
 
