@@ -8,6 +8,7 @@ import { getOrCreateWeekPlans } from "@/lib/plan/getWeekPlans";
 import { getRecipesByIds, getExercisesByIds, mealIdsFromDay } from "@/lib/plan/lookups";
 import { portionFor } from "@/lib/plan/mealPlan";
 import { localizedField } from "@/lib/plan/localized";
+import { computeWorkoutStreak } from "@/lib/plan/streak";
 import type { MealLogStatus } from "@/lib/actions/mealFriction";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
@@ -18,6 +19,7 @@ import { FreePreviewBanner } from "@/components/FreePreviewBanner";
 import { QuickMealLogToggle } from "@/components/QuickMealLogToggle";
 import { WorkoutCompleteButton } from "@/components/WorkoutCompleteButton";
 import { RotatingBanner } from "@/components/RotatingBanner";
+import { MacroDonutChart } from "@/components/charts/MacroDonutChart";
 import { ensureFeatureImages } from "@/lib/images/ensureFeatureImages";
 
 const MAIN_SLOTS = ["breakfast", "lunch", "dinner"] as const;
@@ -46,17 +48,23 @@ export default async function HomePage() {
 
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  const streakWindowStart = new Date();
+  streakWindowStart.setDate(streakWindowStart.getDate() - 60);
   const { data: recentLogs } = await supabase
     .from("progress_logs")
     .select("*")
     .eq("user_id", user.id)
-    .gte("date", sevenDaysAgo.toISOString().slice(0, 10))
+    .gte("date", streakWindowStart.toISOString().slice(0, 10))
     .order("date", { ascending: true });
 
-  const workoutsCompleted = (recentLogs ?? []).filter((l) => l.workout_completed).length;
+  const sevenDaysAgoStr = sevenDaysAgo.toISOString().slice(0, 10);
+  const workoutsCompleted = (recentLogs ?? []).filter(
+    (l) => l.workout_completed && l.date >= sevenDaysAgoStr
+  ).length;
   const latestWeight = [...(recentLogs ?? [])].reverse().find((l) => l.weight_kg != null)?.weight_kg;
 
   const todayDate = new Date().toISOString().slice(0, 10);
+  const workoutStreak = computeWorkoutStreak(recentLogs ?? [], todayDate);
   const todayProgressLog = (recentLogs ?? []).find((l) => l.date === todayDate);
   const { data: todayMealLogs } = await supabase
     .from("meal_logs")
@@ -114,6 +122,36 @@ export default async function HomePage() {
       </div>
 
       <RotatingBanner slides={bannerSlides} />
+
+      {mealPlan && (
+        <Card className="flex items-center gap-5">
+          <MacroDonutChart
+            proteinG={mealPlan.macros.proteinG}
+            carbsG={mealPlan.macros.carbsG}
+            fatG={mealPlan.macros.fatG}
+          />
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <h2 className="text-lg font-extrabold tracking-tight">{t.home.macros}</h2>
+            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 shrink-0 rounded-full bg-[#ff5722]" />
+                <b>{mealPlan.macros.proteinG}g</b>
+                <span className="text-[var(--color-text-tertiary)]">{t.meals.protein}</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 shrink-0 rounded-full bg-[#0d6efd]" />
+                <b>{mealPlan.macros.carbsG}g</b>
+                <span className="text-[var(--color-text-tertiary)]">{t.meals.carbs}</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 shrink-0 rounded-full bg-[#ffb020]" />
+                <b>{mealPlan.macros.fatG}g</b>
+                <span className="text-[var(--color-text-tertiary)]">{t.meals.fat}</span>
+              </span>
+            </div>
+          </div>
+        </Card>
+      )}
 
       <Card>
         <div className="mb-4 flex items-center justify-between">
@@ -221,36 +259,38 @@ export default async function HomePage() {
         </div>
         {todayWorkout?.type === "workout" ? (
           <div className="flex flex-col gap-3">
-            {featuredExercise && (
-              <div className="gradient-tint-secondary relative flex items-center gap-4 overflow-hidden rounded-2xl p-3">
-                <BlobImage
-                  src={featuredExercise.image_url}
-                  alt={featuredExercise.name}
-                  icon={Dumbbell}
-                  variant={3}
-                  className="h-24 w-24 shrink-0"
-                  sizes="96px"
-                />
-                <div className="min-w-0">
-                  <span className="block text-xs font-bold uppercase tracking-wide text-[var(--color-accent-2)]">
-                    {t.workouts.muscleGroups[todayWorkout.focus as keyof typeof t.workouts.muscleGroups] ??
-                      todayWorkout.focus}
-                  </span>
-                  <span className="block text-lg font-extrabold tracking-tight">
+            <div className="gradient-tint-secondary relative flex items-center gap-4 overflow-hidden rounded-2xl p-3">
+              {workoutStreak > 0 && (
+                <span className="absolute top-2 right-2 z-10 flex items-center gap-1 rounded-full bg-[var(--color-text-primary)] px-2.5 py-1 text-[11px] font-extrabold text-white">
+                  <Flame strokeWidth={2} className="h-3 w-3" />
+                  {format(t.home.streakDays, { count: workoutStreak })}
+                </span>
+              )}
+              <BlobImage
+                src={featuredExercise?.image_url}
+                alt={featuredExercise?.name ?? ""}
+                icon={Dumbbell}
+                variant={3}
+                className="h-24 w-24 shrink-0"
+                sizes="96px"
+              />
+              <div className="min-w-0">
+                <span className="block text-lg font-extrabold tracking-tight">
+                  {t.workouts.muscleGroups[todayWorkout.focus as keyof typeof t.workouts.muscleGroups] ??
+                    todayWorkout.focus}
+                </span>
+                {featuredExercise && (
+                  <span className="block truncate text-sm font-semibold text-[var(--color-text-secondary)]">
                     {localizedField(featuredExercise, "name", "name_ka", locale)}
                   </span>
-                  <span className="block text-sm text-[var(--color-text-secondary)]">
-                    {format(t.home.featuredExercises, { count: todayWorkout.exercises.length })}
-                  </span>
-                </div>
+                )}
+                <span className="block text-xs text-[var(--color-text-tertiary)]">
+                  {format(t.home.featuredExercises, { count: todayWorkout.exercises.length })}
+                  {" · "}
+                  {format(t.home.approxDuration, { minutes: profile?.time_available_minutes ?? 30 })}
+                </span>
               </div>
-            )}
-            {!featuredExercise && (
-              <span className="text-sm font-bold text-[var(--color-accent-2)]">
-                {t.workouts.muscleGroups[todayWorkout.focus as keyof typeof t.workouts.muscleGroups] ??
-                  todayWorkout.focus}
-              </span>
-            )}
+            </div>
             {todayWorkout.exercises.map((ex) => {
               const exercise = exerciseMap.get(ex.exerciseId);
               if (!exercise) return null;

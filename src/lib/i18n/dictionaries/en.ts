@@ -143,6 +143,9 @@ const en = {
     trainCardio: "Cardio",
     trainHome: "Home workout",
     trainOutdoor: "Outdoor training",
+    macros: "Macros",
+    streakDays: "{count}-day streak",
+    approxDuration: "~{minutes} min",
   },
   meals: {
     title: "Meal plan",

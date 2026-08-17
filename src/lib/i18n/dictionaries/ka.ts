@@ -145,6 +145,9 @@ const ka: Dictionary = {
     trainCardio: "კარდიო",
     trainHome: "სახლის ვარჯიში",
     trainOutdoor: "გარე ვარჯიში",
+    macros: "მაკროელემენტები",
+    streakDays: "{count} დღიანი სერია",
+    approxDuration: "~{minutes} წთ",
   },
   meals: {
     title: "კვების გეგმა",
