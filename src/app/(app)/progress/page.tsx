@@ -1,14 +1,19 @@
 import Link from "next/link";
-import { CheckCircle2, XCircle, Minus, Images, Flag } from "lucide-react";
+import { CheckCircle2, XCircle, Minus, Images, Flag, Trophy } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getServerDictionary } from "@/lib/i18n/serverLocale";
 import { format } from "@/lib/i18n/format";
 import { isSubscriptionActive } from "@/lib/premium/access";
 import type { ProjectionData } from "@/lib/ai/ensureAiPlan";
+import { computeWorkoutStreak } from "@/lib/plan/streak";
+import { computeCelebration } from "@/lib/plan/celebration";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { ProgressLogForm } from "@/components/ProgressLogForm";
 import { MetricChartCard, type MetricSeries } from "@/components/MetricChartCard";
+import { JourneyPath, type JourneyWeekStop } from "@/components/charts/JourneyPath";
+
+const JOURNEY_DEFAULT_HORIZON_WEEKS = 8;
 
 export default async function ProgressPage() {
   const supabase = await createClient();
@@ -20,7 +25,7 @@ export default async function ProgressPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("weight_kg, subscription_status, subscription_expires_at")
+    .select("weight_kg, goal, created_at, subscription_status, subscription_expires_at")
     .eq("id", user.id)
     .single();
 
@@ -86,6 +91,30 @@ export default async function ProgressPage() {
 
   const recentDays = [...(logs ?? [])].reverse().slice(0, 14);
 
+  const todayDate = new Date().toISOString().slice(0, 10);
+  const workoutStreak = computeWorkoutStreak(logs ?? [], todayDate);
+  const totalWorkoutsCompleted = (logs ?? []).filter((l) => l.workout_completed).length;
+  const celebration = computeCelebration({
+    workoutStreak,
+    totalWorkoutsCompleted,
+    changeKg: change,
+    goal: profile?.goal ?? null,
+  });
+
+  const horizonWeeks = premium && projection ? projection.horizonWeeks : JOURNEY_DEFAULT_HORIZON_WEEKS;
+  const now = new Date();
+  const accountStart = profile?.created_at ? new Date(profile.created_at) : now;
+  const daysSinceStart = Math.floor((now.getTime() - accountStart.getTime()) / (1000 * 60 * 60 * 24));
+  const currentWeekIndex = Math.min(Math.max(Math.floor(daysSinceStart / 7) + 1, 1), horizonWeeks);
+  const journeyWeeks: JourneyWeekStop[] = Array.from({ length: horizonWeeks }, (_, i) => {
+    const weekNumber = i + 1;
+    return {
+      index: weekNumber,
+      label: format(t.progress.journeyWeekShort, { n: weekNumber }),
+      status: weekNumber < currentWeekIndex ? "past" : weekNumber === currentWeekIndex ? "current" : "future",
+    };
+  });
+
   return (
     <div className="flex flex-col gap-6 py-6">
       <h1 className="text-3xl font-extrabold tracking-tight">{t.progress.title}</h1>
@@ -100,9 +129,42 @@ export default async function ProgressPage() {
         />
       </div>
 
+      {celebration && (
+        <Card className="gradient-tint-primary flex items-center gap-4">
+          <span className="blob-mask blob-variant-3 flex h-14 w-14 shrink-0 items-center justify-center bg-[var(--color-accent)]">
+            <Trophy strokeWidth={1.8} className="h-6 w-6 text-white" />
+          </span>
+          <div className="min-w-0">
+            <h2 className="text-lg font-extrabold tracking-tight">
+              {celebration.type === "streak" &&
+                format(t.progress.celebrationStreakHeadline, { days: celebration.days })}
+              {celebration.type === "weight" &&
+                format(t.progress.celebrationWeightHeadline, { kg: celebration.kg })}
+              {celebration.type === "workouts" &&
+                format(t.progress.celebrationWorkoutsHeadline, { count: celebration.count })}
+            </h2>
+            <p className="text-sm text-[var(--color-text-secondary)]">
+              {celebration.type === "streak" &&
+                format(t.progress.celebrationStreakDetail, { days: celebration.days })}
+              {celebration.type === "weight" &&
+                format(t.progress.celebrationWeightDetail, {
+                  start: startingWeight ?? "—",
+                  current: currentWeight ?? "—",
+                })}
+              {celebration.type === "workouts" && t.progress.celebrationWorkoutsDetail}
+            </p>
+          </div>
+        </Card>
+      )}
+
       <Card>
         <h2 className="mb-4 text-lg font-extrabold tracking-tight">{t.progress.weightOverTime}</h2>
         <MetricChartCard series={metricSeries} projectedWeight={projectedWeight} />
+      </Card>
+
+      <Card>
+        <h2 className="mb-4 text-lg font-extrabold tracking-tight">{t.progress.journeyTitle}</h2>
+        <JourneyPath weeks={journeyWeeks} />
       </Card>
 
       {premium && projection && projection.milestones.length > 0 && (
