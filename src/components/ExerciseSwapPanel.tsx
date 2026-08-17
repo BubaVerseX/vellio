@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Repeat } from "lucide-react";
+import { Repeat, Dumbbell } from "lucide-react";
 import { useLocale } from "@/lib/i18n";
 import { fetchExerciseAlternatives, applyExerciseSwap } from "@/lib/actions/swap";
 import { localizedField } from "@/lib/plan/localized";
 import type { DayKey } from "@/lib/plan/mealPlan";
 import type { Tables } from "@/lib/supabase/database.types";
 import { Button } from "@/components/ui/Button";
+import { BlobImage } from "@/components/ui/BlobImage";
+import { ImageAttribution } from "@/components/ui/ImageAttribution";
 
 type Exercise = Tables<"exercises">;
 
@@ -82,10 +84,23 @@ export function ExerciseSwapPanel({
           type="button"
           onClick={() => handleChoose(alt.id)}
           disabled={applying !== null}
-          className="soft-raised flex items-center justify-between rounded-xl px-3 py-2.5 text-left"
+          className="soft-raised flex items-center gap-3 rounded-xl px-3 py-2.5 text-left"
         >
-          <span className="text-sm font-semibold">{localizedField(alt, "name", "name_ka", locale)}</span>
-          <span className="text-xs font-bold text-[var(--color-accent-2)]">
+          <BlobImage
+            src={alt.image_url}
+            alt={alt.name}
+            icon={Dumbbell}
+            variant={3}
+            className="h-10 w-10 shrink-0"
+            sizes="40px"
+          />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-semibold">
+              {localizedField(alt, "name", "name_ka", locale)}
+            </span>
+            <ImageAttribution name={alt.image_attribution_name} url={alt.image_attribution_url} />
+          </span>
+          <span className="shrink-0 text-xs font-bold text-[var(--color-accent-2)]">
             {alt.default_sets} × {alt.default_reps}
           </span>
         </button>

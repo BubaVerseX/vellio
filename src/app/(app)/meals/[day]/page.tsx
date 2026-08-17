@@ -16,6 +16,7 @@ import { getFavoriteIds } from "@/lib/actions/favorites";
 import type { MealLogStatus } from "@/lib/actions/mealFriction";
 import { Card } from "@/components/ui/Card";
 import { BlobImage } from "@/components/ui/BlobImage";
+import { ImageAttribution } from "@/components/ui/ImageAttribution";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { MealSwapPanel } from "@/components/MealSwapPanel";
 import { MealMainSlotControls } from "@/components/MealMainSlotControls";
@@ -94,13 +95,21 @@ export default async function MealDayPage({
       <div className="flex flex-col gap-5">
         {mealsInOrder.map(({ type, slot, recipe, portion }, i) => (
           <Card key={`${type}-${recipe.id}-${i}`} className="flex flex-col gap-4 sm:flex-row">
-            <BlobImage
-              src={recipe.image_url}
-              alt={recipe.name}
-              icon={Utensils}
-              variant={((["breakfast", "lunch", "dinner", "snack"].indexOf(type) % 3) + 1) as 1 | 2 | 3}
-              className="h-28 w-28 shrink-0 self-center sm:self-start"
-            />
+            <div className="flex shrink-0 flex-col gap-1 self-center sm:self-start">
+              <BlobImage
+                src={recipe.image_url}
+                alt={recipe.name}
+                icon={Utensils}
+                variant={((["breakfast", "lunch", "dinner", "snack"].indexOf(type) % 3) + 1) as 1 | 2 | 3}
+                className="h-28 w-28"
+                sizes="112px"
+              />
+              <ImageAttribution
+                name={recipe.image_attribution_name}
+                url={recipe.image_attribution_url}
+                className="w-28 text-center"
+              />
+            </div>
             <div className="flex flex-1 flex-col gap-2">
               <div className="flex items-start justify-between gap-2">
                 <span className="text-xs font-bold uppercase tracking-wide text-[var(--color-text-tertiary)]">

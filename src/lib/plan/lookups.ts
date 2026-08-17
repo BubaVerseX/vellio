@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/lib/supabase/database.types";
+import { ensureRecipeImages, ensureExerciseImages } from "@/lib/images/ensureImages";
 
 export async function getRecipesByIds(ids: string[]): Promise<Map<string, Tables<"recipes">>> {
   const uniqueIds = [...new Set(ids)].filter(Boolean);
@@ -7,7 +8,8 @@ export async function getRecipesByIds(ids: string[]): Promise<Map<string, Tables
 
   const supabase = await createClient();
   const { data } = await supabase.from("recipes").select("*").in("id", uniqueIds);
-  return new Map((data ?? []).map((r) => [r.id, r]));
+  const recipes = await ensureRecipeImages(data ?? []);
+  return new Map(recipes.map((r) => [r.id, r]));
 }
 
 export async function getExercisesByIds(ids: string[]): Promise<Map<string, Tables<"exercises">>> {
@@ -16,7 +18,8 @@ export async function getExercisesByIds(ids: string[]): Promise<Map<string, Tabl
 
   const supabase = await createClient();
   const { data } = await supabase.from("exercises").select("*").in("id", uniqueIds);
-  return new Map((data ?? []).map((e) => [e.id, e]));
+  const exercises = await ensureExerciseImages(data ?? []);
+  return new Map(exercises.map((e) => [e.id, e]));
 }
 
 export function mealIdsFromDay(day: {

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Flame, UtensilsCrossed, Dumbbell, Scale } from "lucide-react";
+import { Flame, UtensilsCrossed, Dumbbell, Scale, Utensils } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getServerDictionary } from "@/lib/i18n/serverLocale";
 import { format } from "@/lib/i18n/format";
@@ -12,6 +12,8 @@ import type { MealLogStatus } from "@/lib/actions/mealFriction";
 import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/Button";
+import { BlobImage } from "@/components/ui/BlobImage";
+import { ImageAttribution } from "@/components/ui/ImageAttribution";
 import { QuickMealLogToggle } from "@/components/QuickMealLogToggle";
 import { WorkoutCompleteButton } from "@/components/WorkoutCompleteButton";
 
@@ -105,13 +107,27 @@ export default async function HomePage() {
                 const displayCalories = Math.round(recipe.calories * portionFor(todayMeals, slot));
                 return (
                   <div key={slot} className="soft-pressed flex items-center justify-between gap-2 rounded-xl px-4 py-3">
-                    <div className="min-w-0">
-                      <span className="block text-[10px] font-bold uppercase text-[var(--color-text-tertiary)]">
-                        {t.meals[slot]}
-                      </span>
-                      <span className="block truncate text-sm font-semibold">
-                        {localizedField(recipe, "name", "name_ka", locale)}
-                      </span>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <BlobImage
+                        src={recipe.image_url}
+                        alt={recipe.name}
+                        icon={Utensils}
+                        variant={1}
+                        className="h-10 w-10 shrink-0"
+                        sizes="40px"
+                      />
+                      <div className="min-w-0">
+                        <span className="block text-[10px] font-bold uppercase text-[var(--color-text-tertiary)]">
+                          {t.meals[slot]}
+                        </span>
+                        <span className="block truncate text-sm font-semibold">
+                          {localizedField(recipe, "name", "name_ka", locale)}
+                        </span>
+                        <ImageAttribution
+                          name={recipe.image_attribution_name}
+                          url={recipe.image_attribution_url}
+                        />
+                      </div>
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
                       <span className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)]">
@@ -132,10 +148,26 @@ export default async function HomePage() {
                 if (!recipe) return null;
                 return (
                   <div key={id} className="soft-pressed flex items-center justify-between rounded-xl px-4 py-3">
-                    <span className="text-sm font-semibold">
-                      {localizedField(recipe, "name", "name_ka", locale)}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-[var(--color-text-tertiary)]">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <BlobImage
+                        src={recipe.image_url}
+                        alt={recipe.name}
+                        icon={Utensils}
+                        variant={2}
+                        className="h-10 w-10 shrink-0"
+                        sizes="40px"
+                      />
+                      <div className="min-w-0">
+                        <span className="block truncate text-sm font-semibold">
+                          {localizedField(recipe, "name", "name_ka", locale)}
+                        </span>
+                        <ImageAttribution
+                          name={recipe.image_attribution_name}
+                          url={recipe.image_attribution_url}
+                        />
+                      </div>
+                    </div>
+                    <span className="flex shrink-0 items-center gap-1 text-xs text-[var(--color-text-tertiary)]">
                       <Flame strokeWidth={1.8} className="h-3.5 w-3.5" />
                       {recipe.calories} {t.meals.calories}
                     </span>
@@ -170,10 +202,26 @@ export default async function HomePage() {
               if (!exercise) return null;
               return (
                 <div key={ex.exerciseId} className="soft-pressed flex items-center justify-between rounded-xl px-4 py-3">
-                  <span className="text-sm font-semibold">
-                    {localizedField(exercise, "name", "name_ka", locale)}
-                  </span>
-                  <span className="text-xs text-[var(--color-text-tertiary)]">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <BlobImage
+                      src={exercise.image_url}
+                      alt={exercise.name}
+                      icon={Dumbbell}
+                      variant={3}
+                      className="h-10 w-10 shrink-0"
+                      sizes="40px"
+                    />
+                    <div className="min-w-0">
+                      <span className="block truncate text-sm font-semibold">
+                        {localizedField(exercise, "name", "name_ka", locale)}
+                      </span>
+                      <ImageAttribution
+                        name={exercise.image_attribution_name}
+                        url={exercise.image_attribution_url}
+                      />
+                    </div>
+                  </div>
+                  <span className="shrink-0 text-xs text-[var(--color-text-tertiary)]">
                     {ex.sets} {t.workouts.sets} × {ex.reps}
                   </span>
                 </div>

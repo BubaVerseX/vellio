@@ -2,13 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Repeat, Flame } from "lucide-react";
+import { Repeat, Flame, Utensils } from "lucide-react";
 import { useLocale } from "@/lib/i18n";
 import { fetchMealAlternatives, applyMealSwap, type MealSlot } from "@/lib/actions/swap";
 import { localizedField } from "@/lib/plan/localized";
 import type { DayKey } from "@/lib/plan/mealPlan";
 import type { Tables } from "@/lib/supabase/database.types";
 import { Button } from "@/components/ui/Button";
+import { BlobImage } from "@/components/ui/BlobImage";
+import { ImageAttribution } from "@/components/ui/ImageAttribution";
 
 type Recipe = Tables<"recipes">;
 
@@ -74,10 +76,23 @@ export function MealSwapPanel({ weekStart, day, slot }: { weekStart: string; day
           type="button"
           onClick={() => handleChoose(alt.id)}
           disabled={applying !== null}
-          className="soft-raised flex items-center justify-between rounded-xl px-3 py-2.5 text-left"
+          className="soft-raised flex items-center gap-3 rounded-xl px-3 py-2.5 text-left"
         >
-          <span className="text-sm font-semibold">{localizedField(alt, "name", "name_ka", locale)}</span>
-          <span className="flex items-center gap-1 text-xs font-bold text-[var(--color-accent)]">
+          <BlobImage
+            src={alt.image_url}
+            alt={alt.name}
+            icon={Utensils}
+            variant={2}
+            className="h-10 w-10 shrink-0"
+            sizes="40px"
+          />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-sm font-semibold">
+              {localizedField(alt, "name", "name_ka", locale)}
+            </span>
+            <ImageAttribution name={alt.image_attribution_name} url={alt.image_attribution_url} />
+          </span>
+          <span className="flex shrink-0 items-center gap-1 text-xs font-bold text-[var(--color-accent)]">
             <Flame strokeWidth={1.8} className="h-3.5 w-3.5" />
             {alt.calories}
           </span>

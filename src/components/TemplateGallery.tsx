@@ -9,9 +9,17 @@ import { recommendPersonalizedWorkout, applyWorkoutTemplate } from "@/lib/action
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { BlobImage } from "@/components/ui/BlobImage";
+import { ImageAttribution } from "@/components/ui/ImageAttribution";
 import { cn } from "@/lib/utils";
+import type { TemplateImage } from "@/lib/images/ensureTemplateImages";
 
-export function TemplateGallery({ userEquipment }: { userEquipment: string | null }) {
+export function TemplateGallery({
+  userEquipment,
+  templateImages,
+}: {
+  userEquipment: string | null;
+  templateImages?: Record<string, TemplateImage>;
+}) {
   const { t } = useLocale();
   const router = useRouter();
   const [recommending, setRecommending] = useState(false);
@@ -65,15 +73,21 @@ export function TemplateGallery({ userEquipment }: { userEquipment: string | nul
           const isApplying = applyingId === template.id;
           const isApplied = appliedId === template.id;
 
+          const image = templateImages?.[template.id];
+
           return (
             <Card key={template.id} className="flex flex-col gap-3">
-              <BlobImage
-                src={null}
-                alt=""
-                icon={Icon}
-                variant={((i % 3) + 1) as 1 | 2 | 3}
-                className="h-20 w-20 self-center"
-              />
+              <div className="flex flex-col items-center gap-1">
+                <BlobImage
+                  src={image?.url}
+                  alt=""
+                  icon={Icon}
+                  variant={((i % 3) + 1) as 1 | 2 | 3}
+                  className="h-20 w-20"
+                  sizes="80px"
+                />
+                <ImageAttribution name={image?.attributionName} url={image?.attributionUrl} />
+              </div>
               <h3 className="text-center text-base font-extrabold tracking-tight">
                 {t.templates.items[template.id as keyof typeof t.templates.items]}
               </h3>

@@ -17,6 +17,7 @@ const en = {
     cm: "cm",
     today: "Today",
     error: "Something went wrong. Please try again.",
+    photoBy: "Photo: {name} / Unsplash",
   },
   nav: {
     home: "Home",

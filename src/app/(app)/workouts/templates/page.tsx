@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getServerDictionary } from "@/lib/i18n/serverLocale";
+import { getTemplateImages } from "@/lib/images/ensureTemplateImages";
 import { TemplateGallery } from "@/components/TemplateGallery";
 
 export default async function WorkoutTemplatesPage() {
@@ -12,11 +13,10 @@ export default async function WorkoutTemplatesPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("equipment_setting")
-    .eq("id", user.id)
-    .single();
+  const [{ data: profile }, templateImages] = await Promise.all([
+    supabase.from("profiles").select("equipment_setting").eq("id", user.id).single(),
+    getTemplateImages(),
+  ]);
 
   return (
     <div className="flex flex-col gap-6 py-6">
@@ -33,7 +33,10 @@ export default async function WorkoutTemplatesPage() {
         <p className="text-sm text-[var(--color-text-secondary)]">{t.templates.subtitle}</p>
       </div>
 
-      <TemplateGallery userEquipment={profile?.equipment_setting ?? null} />
+      <TemplateGallery
+        userEquipment={profile?.equipment_setting ?? null}
+        templateImages={Object.fromEntries(templateImages)}
+      />
     </div>
   );
 }

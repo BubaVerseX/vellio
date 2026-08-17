@@ -19,6 +19,7 @@ const ka: Dictionary = {
     cm: "სმ",
     today: "დღეს",
     error: "დაფიქსირდა შეცდომა. გთხოვთ სცადოთ თავიდან.",
+    photoBy: "ფოტო: {name} / Unsplash",
   },
   nav: {
     home: "მთავარი",

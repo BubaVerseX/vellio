@@ -13,6 +13,7 @@ import { dayLabel } from "@/lib/plan/dayLabel";
 import { getFavoriteIds } from "@/lib/actions/favorites";
 import { Card } from "@/components/ui/Card";
 import { BlobImage } from "@/components/ui/BlobImage";
+import { ImageAttribution } from "@/components/ui/ImageAttribution";
 import { WorkoutCompleteButton } from "@/components/WorkoutCompleteButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { ExerciseSwapPanel } from "@/components/ExerciseSwapPanel";
@@ -89,13 +90,21 @@ export default async function WorkoutDayPage({
               if (!exercise) return null;
               return (
                 <Card key={ex.exerciseId} className="flex gap-4">
-                  <BlobImage
-                    src={exercise.image_url}
-                    alt={exercise.name}
-                    icon={Dumbbell}
-                    variant={((i % 3) + 1) as 1 | 2 | 3}
-                    className="h-20 w-20 shrink-0"
-                  />
+                  <div className="flex shrink-0 flex-col gap-1">
+                    <BlobImage
+                      src={exercise.image_url}
+                      alt={exercise.name}
+                      icon={Dumbbell}
+                      variant={((i % 3) + 1) as 1 | 2 | 3}
+                      className="h-20 w-20"
+                      sizes="80px"
+                    />
+                    <ImageAttribution
+                      name={exercise.image_attribution_name}
+                      url={exercise.image_attribution_url}
+                      className="w-20 text-center"
+                    />
+                  </div>
                   <div className="flex flex-1 flex-col gap-1.5">
                     <div className="flex items-start justify-between gap-2">
                       <h3 className="text-base font-extrabold tracking-tight">
