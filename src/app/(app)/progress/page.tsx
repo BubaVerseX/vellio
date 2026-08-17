@@ -204,6 +204,15 @@ export default async function ProgressPage() {
         </Card>
       </Link>
 
+      <Link href="/progress/wrapped">
+        <Card className="flex items-center justify-between transition-all hover:translate-y-[-1px]">
+          <span className="flex items-center gap-2 text-sm font-bold">
+            <Trophy strokeWidth={1.8} className="h-4 w-4 text-[var(--color-accent)]" />
+            {t.progress.wrappedLink}
+          </span>
+        </Card>
+      </Link>
+
       <Card>
         <h2 className="mb-4 text-lg font-extrabold tracking-tight">{t.progress.workoutLog}</h2>
         <div className="flex flex-col gap-2">

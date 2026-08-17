@@ -294,6 +294,13 @@ const ka: Dictionary = {
     celebrationWorkoutsDetail: "თანმიმდევრულობა აყალიბებს შედეგს — განაგრძე სესიების დაგროვება.",
     journeyTitle: "შენი გზა",
     journeyWeekShort: "კვ.{n}",
+    wrappedLink: "კვირის შეჯამება",
+    wrappedTitle: "შენი კვირის შეჯამება",
+    wrappedSubtitle: "ამ კვირის გასაზიარებელი მიმოხილვა.",
+    wrappedWorkouts: "ვარჯიშები ამ კვირაში",
+    wrappedMealsOnTarget: "მიზნობრივი კვება",
+    wrappedStreak: "დღიანი სერია",
+    wrappedDownload: "სურათის ჩამოტვირთვა",
   },
   profile: {
     title: "პროფილი",

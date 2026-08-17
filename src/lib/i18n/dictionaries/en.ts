@@ -292,6 +292,13 @@ const en = {
     celebrationWorkoutsDetail: "Consistency is what makes a plan work — keep stacking sessions.",
     journeyTitle: "Your journey",
     journeyWeekShort: "W{n}",
+    wrappedLink: "Weekly wrapped",
+    wrappedTitle: "Your week, wrapped",
+    wrappedSubtitle: "A shareable snapshot of this week.",
+    wrappedWorkouts: "Workouts this week",
+    wrappedMealsOnTarget: "Meals on target",
+    wrappedStreak: "Day streak",
+    wrappedDownload: "Download image",
   },
   profile: {
     title: "Profile",

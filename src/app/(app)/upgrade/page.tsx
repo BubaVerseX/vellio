@@ -6,6 +6,7 @@ import { format } from "@/lib/i18n/format";
 import { isSubscriptionActive } from "@/lib/premium/access";
 import { PREMIUM_ANNUAL_PRICE } from "@/lib/payments/ipay";
 import { Card } from "@/components/ui/Card";
+import { OrnamentalLinework } from "@/components/ui/OrnamentalLinework";
 import { UpgradeButton } from "@/components/UpgradeButton";
 
 export default async function UpgradePage() {
@@ -64,18 +65,21 @@ export default async function UpgradePage() {
         </div>
       </Card>
 
-      <Card className="flex flex-col items-center gap-4 text-center">
-        <span className="text-2xl font-extrabold tracking-tight">
+      <Card className="relative flex flex-col items-center gap-4 overflow-hidden text-center">
+        <OrnamentalLinework className="text-[var(--color-accent)] opacity-[0.05]" />
+        <span className="relative text-2xl font-extrabold tracking-tight">
           {format(t.premium.priceLabel, {
             amount: PREMIUM_ANNUAL_PRICE.amount,
             currency: PREMIUM_ANNUAL_PRICE.currency,
           })}
         </span>
-        {active ? (
-          <p className="text-sm font-semibold text-[var(--color-accent)]">{t.premium.alreadyActive}</p>
-        ) : (
-          <UpgradeButton />
-        )}
+        <div className="relative">
+          {active ? (
+            <p className="text-sm font-semibold text-[var(--color-accent)]">{t.premium.alreadyActive}</p>
+          ) : (
+            <UpgradeButton />
+          )}
+        </div>
       </Card>
     </div>
   );
