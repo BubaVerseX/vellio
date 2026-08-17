@@ -175,6 +175,7 @@ const en = {
     markEaten: "Eaten",
     ateOut: "Ate out",
     portion: "Portion",
+    georgianBadge: "Georgian",
   },
   workouts: {
     title: "Workout plan",

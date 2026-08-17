@@ -18,6 +18,7 @@ import { Card } from "@/components/ui/Card";
 import { BlobImage } from "@/components/ui/BlobImage";
 import { ImageAttribution } from "@/components/ui/ImageAttribution";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { GeorgianRibbonBadge } from "@/components/ui/GeorgianRibbonBadge";
 import { MealSwapPanel } from "@/components/MealSwapPanel";
 import { MealMainSlotControls } from "@/components/MealMainSlotControls";
 import type { MealSlot } from "@/lib/actions/swap";
@@ -96,14 +97,17 @@ export default async function MealDayPage({
         {mealsInOrder.map(({ type, slot, recipe, portion }, i) => (
           <Card key={`${type}-${recipe.id}-${i}`} className="flex flex-col gap-4 sm:flex-row">
             <div className="flex shrink-0 flex-col gap-1 self-center sm:self-start">
-              <BlobImage
-                src={recipe.image_url}
-                alt={recipe.name}
-                icon={Utensils}
-                variant={((["breakfast", "lunch", "dinner", "snack"].indexOf(type) % 3) + 1) as 1 | 2 | 3}
-                className="h-28 w-28"
-                sizes="112px"
-              />
+              <div className="relative">
+                {recipe.cuisine === "georgian" && <GeorgianRibbonBadge label={t.meals.georgianBadge} />}
+                <BlobImage
+                  src={recipe.image_url}
+                  alt={recipe.name}
+                  icon={Utensils}
+                  variant={((["breakfast", "lunch", "dinner", "snack"].indexOf(type) % 3) + 1) as 1 | 2 | 3}
+                  className="h-28 w-28"
+                  sizes="112px"
+                />
+              </div>
               <ImageAttribution
                 name={recipe.image_attribution_name}
                 url={recipe.image_attribution_url}

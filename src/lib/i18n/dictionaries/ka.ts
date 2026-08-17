@@ -177,6 +177,7 @@ const ka: Dictionary = {
     markEaten: "შეჭმულია",
     ateOut: "გარეთ ვჭამე",
     portion: "პორცია",
+    georgianBadge: "ქართული",
   },
   workouts: {
     title: "ვარჯიშის გეგმა",
