@@ -44,8 +44,10 @@ export function QuickMealLogToggle({
           onClick={() => toggle("eaten")}
           aria-label="Mark eaten"
           className={cn(
-            "flex h-6 w-6 items-center justify-center rounded-lg",
-            status === "eaten" ? "soft-pressed text-[var(--color-accent)]" : "soft-raised text-[var(--color-text-tertiary)]"
+            "flex h-6 w-6 items-center justify-center border",
+            status === "eaten"
+              ? "border-[var(--color-accent)] text-[var(--color-accent)]"
+              : "border-[var(--color-border)] text-[var(--color-text-tertiary)]"
           )}
         >
           <Check strokeWidth={2} className="h-3.5 w-3.5" />
@@ -55,8 +57,10 @@ export function QuickMealLogToggle({
           onClick={() => toggle("ate_out")}
           aria-label="Mark ate out"
           className={cn(
-            "flex h-6 w-6 items-center justify-center rounded-lg",
-            status === "ate_out" ? "soft-pressed text-[var(--color-accent)]" : "soft-raised text-[var(--color-text-tertiary)]"
+            "flex h-6 w-6 items-center justify-center border",
+            status === "ate_out"
+              ? "border-[var(--color-accent)] text-[var(--color-accent)]"
+              : "border-[var(--color-border)] text-[var(--color-text-tertiary)]"
           )}
         >
           <UtensilsCrossed strokeWidth={2} className="h-3.5 w-3.5" />
@@ -66,8 +70,10 @@ export function QuickMealLogToggle({
           onClick={() => toggle("social")}
           aria-label="Mark social meal"
           className={cn(
-            "flex h-6 w-6 items-center justify-center rounded-lg",
-            status === "social" ? "soft-pressed text-[var(--color-accent)]" : "soft-raised text-[var(--color-text-tertiary)]"
+            "flex h-6 w-6 items-center justify-center border",
+            status === "social"
+              ? "border-[var(--color-supra-accent)] text-[var(--color-supra-accent)]"
+              : "border-[var(--color-border)] text-[var(--color-text-tertiary)]"
           )}
         >
           <PartyPopper strokeWidth={2} className="h-3.5 w-3.5" />

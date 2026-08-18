@@ -182,6 +182,11 @@ const en = {
     georgianBadge: "Georgian",
     supraHeadline: "What are we celebrating?",
     supraBody: "Enjoy the table. No guilt, just balance tomorrow.",
+    supraCta: "Log the supra",
+    supraReassurance: "The streak doesn't break",
+    occasionFamily: "Family",
+    occasionBirthday: "Birthday",
+    occasionWedding: "Wedding",
   },
   workouts: {
     title: "Workout plan",

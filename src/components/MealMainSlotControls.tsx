@@ -14,14 +14,12 @@ import {
 } from "@/lib/actions/mealFriction";
 import { PORTION_OPTIONS } from "@/lib/plan/portions";
 import { SupraCelebrationCard } from "@/components/SupraCelebrationCard";
-import { cn } from "@/lib/utils";
 
 export function MealMainSlotControls({
   weekStart,
   day,
   slot,
   date,
-  recipeName,
   currentPortion,
   initialLogStatus,
 }: {
@@ -29,7 +27,6 @@ export function MealMainSlotControls({
   day: DayKey;
   slot: MealSlotKey;
   date: string;
-  recipeName: string;
   currentPortion: number;
   initialLogStatus: MealLogStatus | null;
 }) {
@@ -39,6 +36,7 @@ export function MealMainSlotControls({
   const [logStatus, setLogStatus] = useState<MealLogStatus | null>(initialLogStatus);
   const [quickSwapPending, setQuickSwapPending] = useState(false);
   const [portionPending, setPortionPending] = useState(false);
+  const [showSupraPanel, setShowSupraPanel] = useState(initialLogStatus === "social");
 
   async function handleQuickSwap() {
     setQuickSwapPending(true);
@@ -67,51 +65,39 @@ export function MealMainSlotControls({
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex flex-wrap items-center gap-2">
-        <button
-          type="button"
-          onClick={handleQuickSwap}
-          disabled={quickSwapPending}
-          className="soft-raised flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold text-[var(--color-text-secondary)]"
+        <Chip onClick={handleQuickSwap} disabled={quickSwapPending} className="!px-3 !py-1.5 text-xs">
+          <span className="flex items-center gap-1.5">
+            <Zap strokeWidth={1.8} className="h-3.5 w-3.5" />
+            {t.meals.quickSwap}
+          </span>
+        </Chip>
+        <Chip selected={logStatus === "eaten"} onClick={() => handleLogToggle("eaten")} className="!px-3 !py-1.5 text-xs">
+          <span className="flex items-center gap-1.5">
+            <Check strokeWidth={1.8} className="h-3.5 w-3.5" />
+            {t.meals.markEaten}
+          </span>
+        </Chip>
+        <Chip selected={logStatus === "ate_out"} onClick={() => handleLogToggle("ate_out")} className="!px-3 !py-1.5 text-xs">
+          <span className="flex items-center gap-1.5">
+            <UtensilsCrossed strokeWidth={1.8} className="h-3.5 w-3.5" />
+            {t.meals.ateOut}
+          </span>
+        </Chip>
+        <Chip
+          selected={showSupraPanel}
+          onClick={() => setShowSupraPanel((v) => !v)}
+          className="!border-[var(--color-supra-accent)]/60 !px-3 !py-1.5 text-xs !text-[var(--color-supra-accent)]"
         >
-          <Zap strokeWidth={1.8} className="h-3.5 w-3.5" />
-          {t.meals.quickSwap}
-        </button>
-        <button
-          type="button"
-          onClick={() => handleLogToggle("eaten")}
-          className={cn(
-            "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold",
-            logStatus === "eaten" ? "soft-pressed text-[var(--color-accent)]" : "soft-raised text-[var(--color-text-secondary)]"
-          )}
-        >
-          <Check strokeWidth={1.8} className="h-3.5 w-3.5" />
-          {t.meals.markEaten}
-        </button>
-        <button
-          type="button"
-          onClick={() => handleLogToggle("ate_out")}
-          className={cn(
-            "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold",
-            logStatus === "ate_out" ? "soft-pressed text-[var(--color-accent)]" : "soft-raised text-[var(--color-text-secondary)]"
-          )}
-        >
-          <UtensilsCrossed strokeWidth={1.8} className="h-3.5 w-3.5" />
-          {t.meals.ateOut}
-        </button>
-        <button
-          type="button"
-          onClick={() => handleLogToggle("social")}
-          className={cn(
-            "flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold",
-            logStatus === "social" ? "soft-pressed text-[var(--color-accent)]" : "soft-raised text-[var(--color-text-secondary)]"
-          )}
-        >
-          <PartyPopper strokeWidth={1.8} className="h-3.5 w-3.5" />
-          {t.meals.social}
-        </button>
+          <span className="flex items-center gap-1.5">
+            <PartyPopper strokeWidth={1.8} className="h-3.5 w-3.5" />
+            {t.meals.social}
+          </span>
+        </Chip>
       </div>
 
-      {logStatus === "social" && <SupraCelebrationCard recipeName={recipeName} />}
+      {showSupraPanel && (
+        <SupraCelebrationCard logged={logStatus === "social"} onConfirm={() => handleLogToggle("social")} />
+      )}
 
       <div className="flex items-center gap-2">
         <span className="text-[11px] font-semibold text-[var(--color-text-tertiary)]">

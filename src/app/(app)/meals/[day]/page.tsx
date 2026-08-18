@@ -186,7 +186,6 @@ export default async function MealDayPage({
                 day={dayKey}
                 slot={slot}
                 date={date}
-                recipeName={name}
                 currentPortion={portionFor(dayPlan, slot)}
                 initialLogStatus={logStatusBySlot.get(slot) ?? null}
               />

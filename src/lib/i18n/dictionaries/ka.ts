@@ -184,6 +184,11 @@ const ka: Dictionary = {
     georgianBadge: "ქართული",
     supraHeadline: "რას ვზეიმობთ?",
     supraBody: "ისიამოვნე სუფრით. დანაშაულის გარეშე — ხვალ უბრალოდ დაბალანსდები.",
+    supraCta: "სუფრის ჩაწერა",
+    supraReassurance: "სერია არ წყდება",
+    occasionFamily: "ოჯახი",
+    occasionBirthday: "დაბადების დღე",
+    occasionWedding: "ქორწილი",
   },
   workouts: {
     title: "ვარჯიშის გეგმა",
