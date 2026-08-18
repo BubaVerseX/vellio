@@ -301,6 +301,7 @@ const ka: Dictionary = {
     celebrationWorkoutsDetail: "თანმიმდევრულობა აყალიბებს შედეგს — განაგრძე სესიების დაგროვება.",
     journeyTitle: "შენი გზა",
     journeyWeekShort: "კვ.{n}",
+    currentLabel: "მიმდინარე",
     wrappedLink: "კვირის შეჯამება",
     wrappedTitle: "შენი კვირის შეჯამება",
     wrappedSubtitle: "ამ კვირის გასაზიარებელი მიმოხილვა.",

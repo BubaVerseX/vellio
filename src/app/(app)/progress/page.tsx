@@ -117,7 +117,14 @@ export default async function ProgressPage() {
 
   return (
     <div className="flex flex-col gap-6 py-6">
-      <h1 className="text-3xl font-extrabold tracking-tight">{t.progress.title}</h1>
+      <div className="flex items-baseline gap-3">
+        <h1 className="text-[26px] font-black tracking-[-0.03em] text-[var(--color-text-primary)]">
+          {t.progress.title}
+        </h1>
+        <span className="text-display text-2xl text-[var(--color-accent)]">
+          {currentWeekIndex}/{horizonWeeks}
+        </span>
+      </div>
 
       <div className="grid grid-cols-3 gap-4">
         <StatCard value={startingWeight ?? "—"} label={t.progress.startingWeight} />
@@ -130,9 +137,9 @@ export default async function ProgressPage() {
       </div>
 
       {celebration && (
-        <Card className="gradient-tint-primary flex items-center gap-4">
-          <span className="blob-mask blob-variant-3 flex h-14 w-14 shrink-0 items-center justify-center bg-[var(--color-accent)]">
-            <Trophy strokeWidth={1.8} className="h-6 w-6 text-white" />
+        <Card className="flex items-center gap-4">
+          <span className="flex h-14 w-14 shrink-0 items-center justify-center bg-[var(--color-accent)]">
+            <Trophy strokeWidth={1.8} className="h-6 w-6 text-[var(--color-bg)]" />
           </span>
           <div className="min-w-0">
             <h2 className="text-lg font-extrabold tracking-tight">
@@ -164,31 +171,41 @@ export default async function ProgressPage() {
 
       <Card>
         <h2 className="mb-4 text-lg font-extrabold tracking-tight">{t.progress.journeyTitle}</h2>
-        <JourneyPath weeks={journeyWeeks} />
+        <JourneyPath weeks={journeyWeeks} currentLabel={t.progress.currentLabel} />
       </Card>
 
       {premium && projection && projection.milestones.length > 0 && (
-        <Card className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3">
           <div>
             <h2 className="text-lg font-extrabold tracking-tight">{t.progress.projectedTitle}</h2>
             <p className="text-xs text-[var(--color-text-secondary)]">
               {format(t.progress.projectedSubtitle, { weeks: projection.horizonWeeks })}
             </p>
           </div>
-          <div className="flex flex-col gap-2">
-            {projection.milestones.map((m, i) => (
-              <div key={i} className="soft-pressed flex items-start gap-3 rounded-xl px-4 py-3">
-                <Flag strokeWidth={1.8} className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-accent-2)]" />
+          {projection.milestones.map((m, i) => (
+            <div
+              key={i}
+              className="relative overflow-hidden border-l-[5px] border-l-[var(--color-accent)] bg-[var(--color-surface)] p-4"
+            >
+              <div
+                className="pointer-events-none absolute top-0 right-0 h-16 w-16 bg-[var(--color-accent)]/15"
+                style={{ clipPath: "polygon(100% 0, 100% 100%, 0 0)" }}
+              />
+              <div className="relative flex items-start gap-3">
+                <Flag strokeWidth={1.8} className="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-accent)]" />
                 <div className="min-w-0">
-                  <span className="block text-[10px] font-bold uppercase tracking-wide text-[var(--color-text-tertiary)]">
+                  <span className="text-mono-label block text-[9px] text-[var(--color-text-tertiary)]">
+                    MILESTONE UNLOCKED
+                  </span>
+                  <span className="mt-1 block text-sm font-bold text-[var(--color-text-primary)]">{m.text}</span>
+                  <span className="text-mono-label mt-1 block text-[9px] text-[var(--color-text-tertiary)]">
                     {m.weekLabel}
                   </span>
-                  <span className="text-sm text-[var(--color-text-secondary)]">{m.text}</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </Card>
+            </div>
+          ))}
+        </div>
       )}
 
       <Card>
