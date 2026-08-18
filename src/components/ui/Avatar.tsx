@@ -17,7 +17,7 @@ export function Avatar({ name, imageUrl, size = 40, className }: AvatarProps) {
         src={imageUrl}
         alt={name ?? "Avatar"}
         style={{ width: size, height: size }}
-        className={cn("rounded-2xl object-cover", className)}
+        className={cn("rounded-none object-cover", className)}
       />
     );
   }
@@ -26,7 +26,7 @@ export function Avatar({ name, imageUrl, size = 40, className }: AvatarProps) {
     <div
       style={{ width: size, height: size }}
       className={cn(
-        "flex items-center justify-center rounded-2xl bg-[var(--color-accent)] font-extrabold text-white",
+        "flex items-center justify-center rounded-none bg-[var(--color-accent)] font-extrabold text-[var(--color-bg)]",
         className
       )}
     >

@@ -9,12 +9,13 @@ const LOCALES: { code: Locale; label: string }[] = [
   { code: "ka", label: "GE" },
 ];
 
+/** Boxed segmented toggle — active segment filled orange. */
 export function LanguageSwitch({ className }: { className?: string }) {
   const { locale, setLocale } = useLocale();
   const router = useRouter();
 
   return (
-    <div className={cn("soft-pressed flex gap-1 rounded-full p-1", className)}>
+    <div className={cn("flex border border-[var(--color-border-strong)]", className)}>
       {LOCALES.map(({ code, label }) => (
         <button
           key={code}
@@ -24,10 +25,10 @@ export function LanguageSwitch({ className }: { className?: string }) {
             router.refresh();
           }}
           className={cn(
-            "rounded-full px-3 py-1.5 text-xs font-bold transition-all",
+            "text-mono-label px-3 py-1.5 text-[10px] transition-colors duration-150",
             locale === code
-              ? "soft-raised text-[var(--color-accent)]"
-              : "text-[var(--color-text-tertiary)]"
+              ? "bg-[var(--color-accent)] text-[var(--color-bg)]"
+              : "text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]"
           )}
         >
           {label}

@@ -5,15 +5,17 @@ interface ChipProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   selected?: boolean;
 }
 
+/** Sharp rectangle chip — no radius. Selected state is an orange-filled
+ * segment (language switch, filter tabs); unselected is bordered. */
 export function Chip({ selected, className, children, ...props }: ChipProps) {
   return (
     <button
       type="button"
       className={cn(
-        "rounded-full px-4 py-2 text-sm font-semibold transition-all",
+        "rounded-none px-4 py-2 text-[13px] font-bold tracking-tight transition-colors duration-150",
         selected
-          ? "soft-raised text-[var(--color-accent)]"
-          : "text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]",
+          ? "bg-[var(--color-accent)] text-[var(--color-bg)]"
+          : "border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-[var(--color-text-primary)]",
         className
       )}
       {...props}
@@ -26,7 +28,7 @@ export function Chip({ selected, className, children, ...props }: ChipProps) {
 export function ChipGroup({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("soft-pressed flex flex-wrap gap-1.5 rounded-[28px] p-1.5", className)}
+      className={cn("flex flex-wrap gap-2 rounded-none", className)}
       {...props}
     />
   );

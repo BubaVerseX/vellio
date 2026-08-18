@@ -22,9 +22,9 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
   }
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-4 bg-[var(--color-bg)] px-4 py-5 md:px-8">
-      <Link href="/home" className="text-2xl font-extrabold tracking-tight">
-        {t.common.appName}
+    <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-5 md:px-8">
+      <Link href="/home" className="text-display text-xl tracking-[0.04em] text-[var(--color-text-primary)]">
+        {t.common.appName.toUpperCase()}
       </Link>
 
       <div className="hidden flex-1 justify-center md:flex">
@@ -35,7 +35,7 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
         <button
           type="button"
           aria-label={t.nav.notifications}
-          className="soft-raised soft-raised-tappable flex h-12 w-12 items-center justify-center rounded-2xl"
+          className="flex h-11 w-11 items-center justify-center border border-[var(--color-border-strong)] transition-colors duration-150 hover:border-white"
         >
           <Bell strokeWidth={1.8} className="h-5 w-5 text-[var(--color-text-secondary)]" />
         </button>
@@ -44,20 +44,20 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
           <button
             type="button"
             onClick={() => setMenuOpen((v) => !v)}
-            className="soft-raised soft-raised-tappable flex items-center gap-1.5 rounded-2xl p-1.5 pr-2.5"
+            className="flex items-center gap-1.5 border border-[var(--color-border-strong)] p-1.5 pr-2.5 transition-colors duration-150 hover:border-white"
           >
-            <Avatar name={fullName} size={36} />
+            <Avatar name={fullName} size={32} />
             <ChevronDown strokeWidth={1.8} className="h-4 w-4 text-[var(--color-text-tertiary)]" />
           </button>
 
           {menuOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-              <div className="soft-raised absolute right-0 z-50 mt-2 w-56 rounded-2xl p-2">
+              <div className="absolute right-0 z-50 mt-2 w-56 border border-[var(--color-border-strong)] bg-[var(--color-surface)] p-1">
                 <Link
                   href="/profile"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-black/[0.03]"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-white/[0.05]"
                 >
                   <Avatar name={fullName} size={20} />
                   {t.nav.profile}
@@ -65,7 +65,7 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
                 <Link
                   href="/settings"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-black/[0.03]"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-white/[0.05]"
                 >
                   <Settings strokeWidth={1.8} className="h-4 w-4 text-[var(--color-text-secondary)]" />
                   {t.nav.settings}
@@ -73,7 +73,7 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
                 <Link
                   href="/tips"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-black/[0.03]"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-white/[0.05]"
                 >
                   <Lightbulb strokeWidth={1.8} className="h-4 w-4 text-[var(--color-text-secondary)]" />
                   {t.nav.tips}
@@ -81,7 +81,7 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
                 <Link
                   href="/faq"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-black/[0.03]"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-white/[0.05]"
                 >
                   <HelpCircle strokeWidth={1.8} className="h-4 w-4 text-[var(--color-text-secondary)]" />
                   {t.nav.faq}
@@ -89,7 +89,7 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
                 <Link
                   href="/legal/disclaimer"
                   onClick={() => setMenuOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-black/[0.03]"
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-[var(--color-text-primary)] hover:bg-white/[0.05]"
                 >
                   <ShieldAlert strokeWidth={1.8} className="h-4 w-4 text-[var(--color-text-secondary)]" />
                   {t.nav.disclaimer}
@@ -97,7 +97,7 @@ export function TopBar({ fullName }: { fullName?: string | null }) {
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-semibold text-[var(--color-accent)] hover:bg-black/[0.03]"
+                  className="flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm font-semibold text-[var(--color-accent)] hover:bg-white/[0.05]"
                 >
                   <LogOut strokeWidth={1.8} className="h-4 w-4" />
                   {t.nav.signOut}

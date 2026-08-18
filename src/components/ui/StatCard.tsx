@@ -11,19 +11,15 @@ export function StatCard({ value, label, accent = "none", className }: StatCardP
   return (
     <div
       className={cn(
-        "soft-raised relative flex flex-col gap-1 overflow-hidden rounded-2xl p-4",
+        "flex flex-col gap-1 border border-[var(--color-border)] bg-[var(--color-surface)] p-4",
+        accent === "primary" && "border-l-[3px] border-l-[var(--color-accent)]",
+        accent === "secondary" && "border-l-[3px] border-l-[var(--color-accent-2)]",
         className
       )}
     >
-      {accent === "primary" && (
-        <div className="gradient-tint-primary pointer-events-none absolute inset-0" />
-      )}
-      {accent === "secondary" && (
-        <div className="gradient-tint-secondary pointer-events-none absolute inset-0" />
-      )}
       <span
         className={cn(
-          "relative text-2xl font-extrabold tracking-tight",
+          "text-display text-2xl",
           accent === "primary" && "text-[var(--color-accent)]",
           accent === "secondary" && "text-[var(--color-accent-2)]",
           accent === "none" && "text-[var(--color-text-primary)]"
@@ -31,7 +27,7 @@ export function StatCard({ value, label, accent = "none", className }: StatCardP
       >
         {value}
       </span>
-      <span className="relative text-xs font-medium text-[var(--color-text-tertiary)]">{label}</span>
+      <span className="text-mono-label text-[9px] text-[var(--color-text-tertiary)]">{label}</span>
     </div>
   );
 }

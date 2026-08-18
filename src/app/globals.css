@@ -1,27 +1,73 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Vellio v3 — bold sports-editorial system.
+   Dark field, hard edges, orange/blue duotone, no elevation.
+   ============================================================ */
+
 :root {
-  --color-bg: #e8ecef;
-  --color-surface: #f4f6f8;
-  --color-text-primary: #141a21;
-  --color-text-secondary: #5c6773;
-  --color-text-tertiary: #8b95a1;
+  /* Background */
+  --color-bg: #0a0c0f;
+  --color-bg-deep: #06080a;
+  --color-surface: #14181d;
+
+  /* Text */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.62);
+  --color-text-tertiary: rgba(255, 255, 255, 0.4);
+
+  /* Accent */
   --color-accent: #ff5722;
+  --color-accent-hover: #ff6c3d;
   --color-accent-2: #0d6efd;
 
-  --shadow-dark: #c7ccd1;
-  --shadow-light: #ffffff;
+  /* Duotone / photography */
+  --color-duotone-a: #0d2b5e;
+  --color-duotone-b: #123a7a;
+  --color-neutral-3: #f2f2f0;
+
+  /* Supra mode (warm, celebratory — never mixed with the main palette) */
+  --color-supra-surface: #1a0f07;
+  --color-supra-accent: #f0a33c;
+
+  /* Equipment silhouettes — hero only */
+  --color-equipment: #141c28;
+
+  /* Borders */
+  --color-border: rgba(255, 255, 255, 0.12);
+  --color-border-strong: rgba(255, 255, 255, 0.3);
+
+  /* Spacing */
+  --gutter: 22px;
+
+  /* Legacy neumorphic shadow tokens — transitional only, kept dark-safe
+     while remaining screens are migrated phase by phase. Delete once the
+     last .soft-raised / .soft-pressed usage is gone (see AGENTS build plan). */
+  --shadow-dark: rgba(0, 0, 0, 0.55);
+  --shadow-light: rgba(255, 255, 255, 0.03);
 }
 
 @theme inline {
   --color-bg: var(--color-bg);
+  --color-bg-deep: var(--color-bg-deep);
   --color-surface: var(--color-surface);
   --color-text-primary: var(--color-text-primary);
   --color-text-secondary: var(--color-text-secondary);
   --color-text-tertiary: var(--color-text-tertiary);
   --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
   --color-accent-2: var(--color-accent-2);
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-duotone-a: var(--color-duotone-a);
+  --color-duotone-b: var(--color-duotone-b);
+  --color-neutral-3: var(--color-neutral-3);
+  --color-supra-surface: var(--color-supra-surface);
+  --color-supra-accent: var(--color-supra-accent);
+  --color-equipment: var(--color-equipment);
+  --color-border: var(--color-border);
+  --color-border-strong: var(--color-border-strong);
+  --font-sans: var(--font-georgian), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: var(--font-anton), "Arial Narrow", sans-serif;
+  --font-mono-label-stack: var(--font-mono-label), ui-monospace, "SFMono-Regular", monospace;
 }
 
 * {
@@ -44,7 +90,7 @@ h1,
 h2,
 h3,
 h4 {
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: -0.03em;
   line-height: 1.1;
 }
@@ -55,9 +101,45 @@ li {
 }
 
 /* ============================================================
-   Soft tactile / neumorphic shadow system — the core visual
-   signature. Shadow tones are derived from --color-bg, never
-   plain neutral gray.
+   Typography primitives
+   ============================================================ */
+
+/* Anton — oversized numbers and short English slogans only. */
+.text-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+}
+
+/* JetBrains Mono — metadata, units, dates, kickers. Always uppercase. */
+.text-mono-label {
+  font-family: var(--font-mono-label-stack);
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Placeholder treatment for values with no real data source (Rule A). */
+.value-placeholder {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono-label-stack);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px dashed rgba(255, 87, 34, 0.6);
+  color: var(--color-text-secondary);
+  padding: 2px 6px;
+}
+
+/* ============================================================
+   Legacy neumorphic shadow system — TRANSITIONAL ONLY.
+   Superseded by the flat/bordered primitives in Button, Chip,
+   Card, EmptyState, StatCard and the tab bar. Screens not yet
+   migrated to the new system still reference these classes
+   directly; kept dark-safe so they don't look broken mid-rollout.
+   Delete this whole block once the last usage is migrated.
    ============================================================ */
 
 .soft-raised {
@@ -105,11 +187,11 @@ button.soft-raised:active,
 }
 
 .surface-alt.soft-raised {
-  box-shadow: 6px 6px 14px #d7dbdd, -6px -6px 14px #ffffff;
+  box-shadow: 6px 6px 14px var(--shadow-dark), -6px -6px 14px var(--shadow-light);
 }
 
 .surface-alt.soft-pressed {
-  box-shadow: inset 4px 4px 8px #d7dbdd, inset -4px -4px 8px #ffffff;
+  box-shadow: inset 4px 4px 8px var(--shadow-dark), inset -4px -4px 8px var(--shadow-light);
 }
 
 /* ============================================================
