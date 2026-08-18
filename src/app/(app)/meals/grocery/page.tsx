@@ -26,17 +26,19 @@ export default async function GroceryListPage() {
     <div className="flex flex-col gap-6 py-6">
       <Link
         href="/meals"
-        className="flex w-fit items-center gap-2 text-sm font-semibold text-[var(--color-text-secondary)]"
+        aria-label={t.meals.title}
+        className="flex h-[34px] w-[34px] items-center justify-center border border-[var(--color-border-strong)] transition-colors duration-150 hover:border-white"
       >
         <ArrowLeft strokeWidth={1.8} className="h-4 w-4" />
-        {t.meals.title}
       </Link>
 
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight">{t.grocery.title}</h1>
-        <p className="text-sm text-[var(--color-text-secondary)]">
-          {format(t.grocery.weekOf, { date: weekStart })}
-        </p>
+        <span className="text-mono-label block text-[10px] text-[var(--color-text-tertiary)]">
+          {format(t.grocery.weekOf, { date: weekStart }).toUpperCase()}
+        </span>
+        <h1 className="text-[26px] font-black tracking-[-0.03em] text-[var(--color-text-primary)]">
+          {t.grocery.title}
+        </h1>
       </div>
 
       {!mealPlan ? (

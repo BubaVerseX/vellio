@@ -249,6 +249,7 @@ const en = {
     title: "Grocery list",
     weekOf: "Week of {date}",
     empty: "No meal plan yet — your grocery list will appear once you have one.",
+    finishList: "Finish list",
     categories: {
       produce: "Produce",
       dairy: "Dairy",
