@@ -147,6 +147,8 @@ const en = {
     macros: "Macros",
     streakDays: "{count}-day streak",
     approxDuration: "~{minutes} min",
+    startSession: "Start",
+    skipSession: "Skip",
   },
   meals: {
     title: "Meal plan",

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Flame, UtensilsCrossed, Dumbbell, Scale, Utensils } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { getServerDictionary } from "@/lib/i18n/serverLocale";
+import en from "@/lib/i18n/dictionaries/en";
 import { format } from "@/lib/i18n/format";
 import { currentWeekStart, dayKeyForDate } from "@/lib/plan/generatePlan";
 import { getOrCreateWeekPlans } from "@/lib/plan/getWeekPlans";
@@ -15,6 +16,7 @@ import { Card } from "@/components/ui/Card";
 import { StatCard } from "@/components/ui/StatCard";
 import { Button } from "@/components/ui/Button";
 import { BlobImage } from "@/components/ui/BlobImage";
+import { DuotonePhoto } from "@/components/ui/DuotonePhoto";
 import { ImageAttribution } from "@/components/ui/ImageAttribution";
 import { FreePreviewBanner } from "@/components/FreePreviewBanner";
 import { QuickMealLogToggle } from "@/components/QuickMealLogToggle";
@@ -97,13 +99,31 @@ export default async function HomePage() {
       ? exerciseMap.get(todayWorkout.exercises[0].exerciseId)
       : undefined;
 
+  const weekday = new Date().toLocaleDateString("en-US", { weekday: "long" }).toUpperCase();
+
   return (
     <div className="flex flex-col gap-6 py-6">
-      <div>
-        <h1 className="text-3xl font-extrabold tracking-tight">
-          {format(t.home.greeting, { name: profile?.full_name?.split(" ")[0] ?? "" })}
-        </h1>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <span className="text-mono-label block text-[10px] text-[var(--color-text-tertiary)]">{weekday}</span>
+          <h1 className="text-[26px] font-black tracking-[-0.03em] text-[var(--color-text-primary)]">
+            {t.common.today}
+          </h1>
+        </div>
+        {workoutStreak > 0 && (
+          <div className="flex items-center gap-2 rounded-full border-[1.5px] border-[var(--color-accent)] bg-[var(--color-surface)] px-3 py-1.5">
+            <span className="text-display text-xl text-[var(--color-accent)]">{workoutStreak}</span>
+            <span className="flex flex-col leading-[1.15]">
+              <span className="text-mono-label text-[8.5px] text-[var(--color-text-secondary)]">DAY</span>
+              <span className="text-mono-label text-[8.5px] text-[var(--color-text-secondary)]">STREAK</span>
+            </span>
+          </div>
+        )}
       </div>
+
+      <p className="-mt-4 text-sm text-[var(--color-text-secondary)]">
+        {format(t.home.greeting, { name: profile?.full_name?.split(" ")[0] ?? "" })}
+      </p>
 
       {isEphemeral && <FreePreviewBanner />}
 
@@ -122,36 +142,92 @@ export default async function HomePage() {
         <StatCard value={profile?.goal ? t.onboarding[goalLabelKey(profile.goal)] : "—"} label={t.onboarding.goal} />
       </div>
 
+      {todayWorkout?.type === "workout" && (
+        <div className="flex flex-col gap-3">
+          <div className="relative h-[250px] w-full overflow-hidden">
+            <DuotonePhoto
+              src={featuredExercise?.image_url}
+              alt=""
+              className="h-full w-full"
+              sizes="(min-width: 768px) 700px, 100vw"
+            />
+            <span className="text-mono-label absolute top-4 left-4 z-10 bg-[var(--color-accent)] px-2.5 py-1 text-[9px] text-[var(--color-bg)]">
+              TODAY&apos;S SESSION
+            </span>
+            <div className="absolute right-0 bottom-0 left-0 z-10 p-4">
+              <h2 className="text-display text-[36px] text-[var(--color-text-primary)] md:text-[44px]">
+                {(en.workouts.muscleGroups[todayWorkout.focus as keyof typeof en.workouts.muscleGroups] ??
+                  todayWorkout.focus
+                ).toUpperCase()}
+              </h2>
+              <p className="text-sm font-bold text-[var(--color-text-primary)]">
+                {t.workouts.muscleGroups[todayWorkout.focus as keyof typeof t.workouts.muscleGroups] ??
+                  todayWorkout.focus}
+                {" · "}
+                {format(t.home.approxDuration, { minutes: profile?.time_available_minutes ?? 30 })}
+              </p>
+            </div>
+            <div
+              className="absolute right-0 bottom-0 left-0 z-10 h-[56px] bg-[var(--color-bg)]"
+              style={{ clipPath: "polygon(0 100%, 100% 45%, 100% 100%)" }}
+            />
+          </div>
+          <div className="flex gap-3">
+            <Link href={`/workouts/${todayKey}`} className="flex-1">
+              <Button variant="primary" className="w-full">
+                {t.home.startSession}
+              </Button>
+            </Link>
+            <Link href={`/workouts/${todayKey}`} className="flex-1">
+              <Button variant="ghost" className="w-full">
+                {t.home.skipSession}
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+
       <RotatingBanner slides={bannerSlides} />
 
       {mealPlan && (
-        <Card className="flex items-center gap-5">
-          <MacroDonutChart
-            proteinG={mealPlan.macros.proteinG}
-            carbsG={mealPlan.macros.carbsG}
-            fatG={mealPlan.macros.fatG}
-          />
-          <div className="flex min-w-0 flex-1 flex-col gap-2">
-            <h2 className="text-lg font-extrabold tracking-tight">{t.home.macros}</h2>
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-[#ff5722]" />
-                <b>{mealPlan.macros.proteinG}g</b>
-                <span className="text-[var(--color-text-tertiary)]">{t.meals.protein}</span>
+        <div className="flex flex-col gap-4">
+          <h2 className="text-lg font-extrabold tracking-tight">{t.home.macros}</h2>
+          <div className="flex items-center gap-6">
+            <MacroDonutChart
+              proteinG={mealPlan.macros.proteinG}
+              carbsG={mealPlan.macros.carbsG}
+              fatG={mealPlan.macros.fatG}
+            >
+              <span className="text-display text-2xl text-[var(--color-text-primary)]">
+                {mealPlan.calorieTarget}
               </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-[#0d6efd]" />
-                <b>{mealPlan.macros.carbsG}g</b>
-                <span className="text-[var(--color-text-tertiary)]">{t.meals.carbs}</span>
+              <span className="text-mono-label text-[8px] text-[var(--color-text-tertiary)]">KCAL</span>
+            </MacroDonutChart>
+            <div className="flex min-w-0 flex-1 flex-col gap-2.5 text-sm">
+              <span className="flex items-center gap-2">
+                <span className="h-3 w-3 shrink-0 bg-[var(--color-accent)]" />
+                <span className="text-[var(--color-text-secondary)]">{t.meals.protein}</span>
+                <span className="text-mono-label ml-auto text-[11px] text-[var(--color-text-primary)]">
+                  {mealPlan.macros.proteinG}G
+                </span>
               </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 shrink-0 rounded-full bg-[#ffb020]" />
-                <b>{mealPlan.macros.fatG}g</b>
-                <span className="text-[var(--color-text-tertiary)]">{t.meals.fat}</span>
+              <span className="flex items-center gap-2">
+                <span className="h-3 w-3 shrink-0 bg-[var(--color-accent-2)]" />
+                <span className="text-[var(--color-text-secondary)]">{t.meals.carbs}</span>
+                <span className="text-mono-label ml-auto text-[11px] text-[var(--color-text-primary)]">
+                  {mealPlan.macros.carbsG}G
+                </span>
+              </span>
+              <span className="flex items-center gap-2">
+                <span className="h-3 w-3 shrink-0 bg-[var(--color-neutral-3)]" />
+                <span className="text-[var(--color-text-secondary)]">{t.meals.fat}</span>
+                <span className="text-mono-label ml-auto text-[11px] text-[var(--color-text-primary)]">
+                  {mealPlan.macros.fatG}G
+                </span>
               </span>
             </div>
           </div>
-        </Card>
+        </div>
       )}
 
       <Card>
@@ -260,42 +336,14 @@ export default async function HomePage() {
         </div>
         {todayWorkout?.type === "workout" ? (
           <div className="flex flex-col gap-3">
-            <div className="gradient-tint-secondary relative flex items-center gap-4 overflow-hidden rounded-2xl p-3">
-              {workoutStreak > 0 && (
-                <span className="absolute top-2 right-2 z-10 flex items-center gap-1 rounded-full bg-[var(--color-text-primary)] px-2.5 py-1 text-[11px] font-extrabold text-white">
-                  <Flame strokeWidth={2} className="h-3 w-3" />
-                  {format(t.home.streakDays, { count: workoutStreak })}
-                </span>
-              )}
-              <BlobImage
-                src={featuredExercise?.image_url}
-                alt={featuredExercise?.name ?? ""}
-                icon={Dumbbell}
-                variant={3}
-                className="h-24 w-24 shrink-0"
-                sizes="96px"
-              />
-              <div className="min-w-0">
-                <span className="block text-lg font-extrabold tracking-tight">
-                  {t.workouts.muscleGroups[todayWorkout.focus as keyof typeof t.workouts.muscleGroups] ??
-                    todayWorkout.focus}
-                </span>
-                {featuredExercise && (
-                  <span className="block truncate text-sm font-semibold text-[var(--color-text-secondary)]">
-                    {localizedField(featuredExercise, "name", "name_ka", locale)}
-                  </span>
-                )}
-                <span className="block text-xs text-[var(--color-text-tertiary)]">
-                  {format(t.home.featuredExercises, { count: todayWorkout.exercises.length })}
-                  {" · "}
-                  {format(t.home.approxDuration, { minutes: profile?.time_available_minutes ?? 30 })}
-                </span>
-                <span className="block text-[11px] text-[var(--color-text-tertiary)]">
-                  {format(t.common.khinkaliBurned, {
-                    count: caloriesToKhinkali(estimateWorkoutCalories(profile?.time_available_minutes ?? 30)),
-                  })}
-                </span>
-              </div>
+            <div className="text-mono-label flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-[var(--color-text-tertiary)]">
+              <span>{format(t.home.featuredExercises, { count: todayWorkout.exercises.length })}</span>
+              <span>{format(t.home.approxDuration, { minutes: profile?.time_available_minutes ?? 30 })}</span>
+              <span>
+                {format(t.common.khinkaliBurned, {
+                  count: caloriesToKhinkali(estimateWorkoutCalories(profile?.time_available_minutes ?? 30)),
+                })}
+              </span>
             </div>
             {todayWorkout.exercises.map((ex) => {
               const exercise = exerciseMap.get(ex.exerciseId);
