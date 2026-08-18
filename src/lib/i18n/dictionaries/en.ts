@@ -306,7 +306,8 @@ const en = {
     wrappedWorkouts: "Workouts this week",
     wrappedMealsOnTarget: "Meals on target",
     wrappedStreak: "Day streak",
-    wrappedDownload: "Download image",
+    wrappedShare: "Share",
+    wrappedSave: "Save",
   },
   profile: {
     title: "Profile",

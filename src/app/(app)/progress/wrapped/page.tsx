@@ -5,6 +5,7 @@ import { getServerDictionary } from "@/lib/i18n/serverLocale";
 import { currentWeekStart, dateForDay } from "@/lib/plan/weekDate";
 import { DAYS_OF_WEEK } from "@/lib/plan/mealPlan";
 import { computeWorkoutStreak } from "@/lib/plan/streak";
+import { getOrCreateWeekPlans } from "@/lib/plan/getWeekPlans";
 import { WeeklyWrappedCard } from "@/components/WeeklyWrappedCard";
 
 export default async function WrappedPage() {
@@ -22,7 +23,7 @@ export default async function WrappedPage() {
   const sixtyDaysAgo = new Date();
   sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
 
-  const [{ data: weekLogs }, { data: streakLogs }, { data: weekMealLogs }] = await Promise.all([
+  const [{ data: weekLogs }, { data: streakLogs }, { data: weekMealLogs }, { mealPlan }] = await Promise.all([
     supabase
       .from("progress_logs")
       .select("date, workout_completed")
@@ -40,6 +41,7 @@ export default async function WrappedPage() {
       .eq("user_id", user.id)
       .gte("date", weekStart)
       .lte("date", weekEnd),
+    getOrCreateWeekPlans(user.id, weekStart),
   ]);
 
   const workoutsThisWeek = (weekLogs ?? []).filter((l) => l.workout_completed).length;
@@ -49,6 +51,10 @@ export default async function WrappedPage() {
   const mealsOnTarget = (weekMealLogs ?? []).filter((l) => l.status === "eaten").length;
   const mealsOnTargetPercent =
     totalLoggedMeals > 0 ? Math.round((mealsOnTarget / totalLoggedMeals) * 100) : null;
+
+  const dateRangeLabel = `${new Date(weekStart).toLocaleDateString("en-US", { month: "short", day: "numeric" })} – ${new Date(
+    weekEnd
+  ).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`.toUpperCase();
 
   return (
     <div className="flex flex-col gap-6 py-6">
@@ -69,6 +75,8 @@ export default async function WrappedPage() {
         workoutsThisWeek={workoutsThisWeek}
         mealsOnTargetPercent={mealsOnTargetPercent}
         streak={streak}
+        calorieTarget={mealPlan?.calorieTarget ?? null}
+        dateRangeLabel={dateRangeLabel}
       />
     </div>
   );

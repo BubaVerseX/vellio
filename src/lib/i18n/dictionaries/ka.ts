@@ -308,7 +308,8 @@ const ka: Dictionary = {
     wrappedWorkouts: "ვარჯიშები ამ კვირაში",
     wrappedMealsOnTarget: "მიზნობრივი კვება",
     wrappedStreak: "დღიანი სერია",
-    wrappedDownload: "სურათის ჩამოტვირთვა",
+    wrappedShare: "გაზიარება",
+    wrappedSave: "შენახვა",
   },
   profile: {
     title: "პროფილი",
