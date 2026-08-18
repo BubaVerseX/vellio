@@ -1,14 +1,13 @@
-/** Organic angled ribbon (not a plain rectangle, via clip-path tapering)
- * draped across a recipe card's corner for Georgian-cuisine recipes. */
-export function GeorgianRibbonBadge({ label }: { label: string }) {
+/** Diagonal corner-ribbon for Georgian-cuisine recipe cards — a 45°-rotated
+ * orange bar inside an overflow-hidden corner box, English mono label above
+ * the real localized Georgian word. */
+export function GeorgianRibbonBadge({ labelKa }: { labelKa: string }) {
   return (
-    <div className="pointer-events-none absolute -top-1 -left-3 z-10 -rotate-[40deg] select-none">
-      <span
-        className="block bg-[var(--color-accent)] px-4 py-1 text-[10px] font-extrabold tracking-wide text-white uppercase shadow-md"
-        style={{ clipPath: "polygon(8% 0%, 92% 0%, 100% 50%, 92% 100%, 8% 100%, 0% 50%)" }}
-      >
-        {label}
-      </span>
+    <div className="pointer-events-none absolute top-0 right-0 z-10 h-[126px] w-[126px] overflow-hidden select-none">
+      <div className="text-mono-label absolute top-[22px] right-[-34px] flex w-[170px] rotate-45 flex-col items-center gap-0.5 bg-[var(--color-accent)] py-1.5 text-[var(--color-bg)]">
+        <span className="text-[10px]">GEORGIAN</span>
+        <span className="text-[10px] normal-case tracking-normal">{labelKa}</span>
+      </div>
     </div>
   );
 }
