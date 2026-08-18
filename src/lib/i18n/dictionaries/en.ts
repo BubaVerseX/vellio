@@ -34,10 +34,10 @@ const en = {
     faq: "FAQ",
   },
   landing: {
-    headline: "Your body, your plan.",
+    heroHeadline: "There is no off-season.",
     subhead:
       "Vellio builds a personalized eating and workout plan from your own data — no guesswork, no generic templates.",
-    cta: "Get started",
+    cta: "Start training",
     login: "I already have an account",
     feature1Title: "Built around you",
     feature1Body: "Calorie and macro targets calculated from your stats and goal.",
